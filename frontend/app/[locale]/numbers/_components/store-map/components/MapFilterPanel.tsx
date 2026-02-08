@@ -66,45 +66,28 @@ function EnseigneButton({
   isSelected: boolean;
   onClick: () => void;
 }) {
-  const brandColor = enseigne.color;
-
   return (
     <button
       onClick={onClick}
       title={enseigne.name}
       aria-pressed={isSelected}
       className={clsx(
-        'group relative flex items-center justify-center overflow-hidden',
-        'rounded-xl w-[48px] h-[40px]',
+        'group flex items-center justify-center',
+        'bg-transparent border-none p-0',
         'transition-all duration-200 cursor-pointer select-none',
-        isSelected
-          ? 'shadow-lg scale-[1.08]'
-          : 'hover:shadow-md hover:scale-[1.04]',
+        isSelected ? 'scale-[1.15]' : 'hover:scale-[1.1]',
       )}
-      style={{
-        backgroundColor: isSelected ? `${brandColor}10` : 'rgba(255,255,255,0.9)',
-        border: `2px solid ${isSelected ? brandColor : 'rgba(0,0,0,0.06)'}`,
-      }}
     >
-      {/* Logo fills the button */}
       <img
         alt={enseigne.name}
         src={enseigne.logo}
         className={clsx(
-          'w-[36px] h-[28px] object-contain transition-all duration-200',
+          'w-full h-full object-contain transition-all duration-200',
           isSelected
-            ? 'brightness-105 saturate-110'
-            : 'opacity-50 grayscale-[40%] group-hover:opacity-90 group-hover:grayscale-0',
+            ? 'brightness-110 saturate-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)]'
+            : 'opacity-40 grayscale-[50%] group-hover:opacity-90 group-hover:grayscale-0 group-hover:drop-shadow-[0_1px_3px_rgba(0,0,0,0.15)]',
         )}
       />
-
-      {/* Bottom accent bar when selected */}
-      {isSelected && (
-        <div
-          className="absolute bottom-0 left-1 right-1 h-[2.5px] rounded-full"
-          style={{ backgroundColor: brandColor }}
-        />
-      )}
     </button>
   );
 }
@@ -134,7 +117,7 @@ export default function MapFilterPanel({
 
   return (
     <div className={clsx('absolute z-[2]', POSITION_CLASSES[config.position])}>
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/60 p-2.5">
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/60 px-3 py-2.5">
         {/* ── Cage filter pills ──────────────────────────────────────────── */}
         {config.showCageFilter && (
           <div className="flex items-center gap-1.5 mb-2">
@@ -160,12 +143,13 @@ export default function MapFilterPanel({
           <div className="h-px bg-gray-200/60 mb-2" />
         )}
 
-        {/* ── Enseigne grid ──────────────────────────────────────────────── */}
+        {/* ── Enseigne logo grid ─────────────────────────────────────────── */}
         {config.showEnseigneFilter && (
           <div
-            className="grid gap-1.5"
+            className="grid items-center justify-items-center"
             style={{
-              gridTemplateColumns: `repeat(${config.enseigneGridCols}, minmax(0, 1fr))`,
+              gridTemplateColumns: `repeat(${config.enseigneGridCols}, 48px)`,
+              gap: '8px 12px',
             }}
           >
             {enseigneList.map((enseigne) => (
