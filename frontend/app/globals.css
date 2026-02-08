@@ -339,6 +339,31 @@ h5 {
   transition: all ease-in-out;
 }
 
+/** -------------------------leaflet map popup overrides------------------------- **/
+
+.leaflet-popup-content-wrapper {
+  border-radius: 10px !important;
+  padding: 0 !important;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 12px !important;
+  font-family: Albert Sans, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-content p {
+  margin: 0 !important;
+}
+
+.leaflet-popup-tip {
+  box-shadow: none !important;
+}
+
 /** Autre **/
 
 [id] {
