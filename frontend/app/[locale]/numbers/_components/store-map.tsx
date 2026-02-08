@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { store, enseignes, type EnseigneConfig } from '../_data/store-data';
 import type { Map as LeafletMap } from 'leaflet';
@@ -17,6 +18,33 @@ const FRANCE_CENTER: [number, number] = [46.8, 2.5];
 const DESKTOP_ZOOM = 6;
 const MOBILE_ZOOM = 5;
 const BREAKPOINT_MD = 768;
+
+/* ────────────────────── egg-shaped marker icons ──────────────────────── */
+
+/** Inline SVG egg path — avoids extra HTTP requests and allows dynamic fill */
+function eggSvg(fill: string, stroke: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 20 26">` +
+    `<path d="M10 0.5C15.52 0.5 19.5 9.07 19.5 15.77C19.5 22.47 15.52 25.5 10 25.5` +
+    `C4.48 25.5 0.5 22.47 0.5 15.77C0.5 9.07 4.48 0.5 10 0.5Z" ` +
+    `fill="${fill}" stroke="${stroke}" stroke-width="1"/>` +
+    `</svg>`;
+}
+
+const eggIconCage = L.divIcon({
+  html: eggSvg(COLORS.cage, '#d43d30'),
+  className: 'egg-marker',
+  iconSize: [18, 24],
+  iconAnchor: [9, 24],
+  popupAnchor: [0, -22],
+});
+
+const eggIconFree = L.divIcon({
+  html: eggSvg(COLORS.noCage, '#1a9e48'),
+  className: 'egg-marker',
+  iconSize: [18, 24],
+  iconAnchor: [9, 24],
+  popupAnchor: [0, -22],
+});
 
 /* ─────────────────────── responsive zoom helper ──────────────────────── */
 
@@ -246,16 +274,10 @@ export default function StoreMap() {
         />
 
         {filteredStores.map((s, i) => (
-          <CircleMarker
+          <Marker
             key={`${s.category}-${i}`}
-            center={s.coords}
-            radius={8}
-            pathOptions={{
-              fillColor: s.hasCageEggs ? COLORS.cage : COLORS.noCage,
-              fillOpacity: 0.9,
-              color: s.hasCageEggs ? '#d43d30' : '#1a9e48',
-              weight: 1.5,
-            }}
+            position={s.coords}
+            icon={s.hasCageEggs ? eggIconCage : eggIconFree}
           >
             <Popup>
               <StorePopup
@@ -266,7 +288,7 @@ export default function StoreMap() {
                 urlImg={s.urlImg}
               />
             </Popup>
-          </CircleMarker>
+          </Marker>
         ))}
       </MapContainer>
 
@@ -286,14 +308,14 @@ export default function StoreMap() {
               active={cageFilter === 'cage'}
               color={COLORS.cage}
               label="Œufs cage"
-              icon="/logo/red_ellipse.svg"
+              icon="/logo/egg_marker_cage.svg"
               onClick={() => toggleCageFilter('cage')}
             />
             <CageFilterButton
               active={cageFilter === 'noCage'}
               color={COLORS.noCage}
               label="Pas d'œufs cage"
-              icon="/logo/green_ellipse.svg"
+              icon="/logo/egg_marker_free.svg"
               onClick={() => toggleCageFilter('noCage')}
             />
           </div>
