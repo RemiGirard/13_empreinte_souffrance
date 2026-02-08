@@ -18,6 +18,7 @@ type EggMarkerProps = {
   colors?: MapColorPalette;
   popupConfig?: PopupConfig;
   /** Fully replace the default popup renderer. */
+  // eslint-disable-next-line no-unused-vars
   renderPopup?: (store: Store) => ReactNode;
 };
 

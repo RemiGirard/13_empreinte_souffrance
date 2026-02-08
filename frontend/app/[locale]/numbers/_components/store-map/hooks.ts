@@ -1,14 +1,24 @@
 import { useCallback, useMemo, useState } from 'react';
-import type { CageFilterValue, FilterState, Store, EnseigneConfig } from './types';
+import type {
+  CageFilterValue,
+  MarkerStyle,
+  FilterState,
+  Store,
+  EnseigneConfig,
+} from './types';
+import { DEFAULT_MARKER_SIZE, DEFAULT_MARKER_OPACITY } from './types';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   useStoreMapFilters — all filter logic in a single, testable hook
+   useStoreMapFilters — all filter + settings logic in a single hook
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export type UseStoreMapFiltersReturn = {
   /* state */
   cageFilter: CageFilterValue;
   selectedEnseigne: string | null;
+  markerStyle: MarkerStyle;
+  markerSize: number;
+  markerOpacity: number;
   filterState: FilterState;
 
   /* derived data */
@@ -16,25 +26,35 @@ export type UseStoreMapFiltersReturn = {
   stats: { total: number; withCage: number };
 
   /* actions */
+  // eslint-disable-next-line no-unused-vars
   toggleCageFilter: (value: CageFilterValue) => void;
+  // eslint-disable-next-line no-unused-vars
   toggleEnseigne: (enseigneId: string) => void;
+  // eslint-disable-next-line no-unused-vars
+  setMarkerStyle: (style: MarkerStyle) => void;
+  // eslint-disable-next-line no-unused-vars
+  setMarkerSize: (size: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  setMarkerOpacity: (opacity: number) => void;
   resetFilters: () => void;
 };
 
 /**
- * Encapsulates every piece of filter state + derived data for StoreMap.
- *
- * ```tsx
- * const { filteredStores, stats, toggleCageFilter, toggleEnseigne } =
- *   useStoreMapFilters(stores, enseignes);
- * ```
+ * Encapsulates every piece of filter / settings state + derived data.
  */
 export function useStoreMapFilters(
   stores: Store[],
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   enseigneList: EnseigneConfig[],
 ): UseStoreMapFiltersReturn {
+  /* ── filter state ───────────────────────────────────────────────────── */
   const [cageFilter, setCageFilter] = useState<CageFilterValue>('all');
   const [selectedEnseigne, setSelectedEnseigne] = useState<string | null>(null);
+
+  /* ── settings state ─────────────────────────────────────────────────── */
+  const [markerStyle, setMarkerStyleState] = useState<MarkerStyle>('illustrated');
+  const [markerSize, setMarkerSizeState] = useState<number>(DEFAULT_MARKER_SIZE);
+  const [markerOpacity, setMarkerOpacityState] = useState<number>(DEFAULT_MARKER_OPACITY);
 
   /* ── actions ─────────────────────────────────────────────────────────── */
 
@@ -44,6 +64,18 @@ export function useStoreMapFilters(
 
   const toggleEnseigne = useCallback((enseigneId: string) => {
     setSelectedEnseigne((prev) => (prev === enseigneId ? null : enseigneId));
+  }, []);
+
+  const setMarkerStyle = useCallback((style: MarkerStyle) => {
+    setMarkerStyleState(style);
+  }, []);
+
+  const setMarkerSize = useCallback((size: number) => {
+    setMarkerSizeState(size);
+  }, []);
+
+  const setMarkerOpacity = useCallback((opacity: number) => {
+    setMarkerOpacityState(opacity);
   }, []);
 
   const resetFilters = useCallback(() => {
@@ -77,18 +109,24 @@ export function useStoreMapFilters(
   /* ── snapshot ────────────────────────────────────────────────────────── */
 
   const filterState: FilterState = useMemo(
-    () => ({ cageFilter, selectedEnseigne }),
-    [cageFilter, selectedEnseigne],
+    () => ({ cageFilter, selectedEnseigne, markerStyle, markerSize, markerOpacity }),
+    [cageFilter, selectedEnseigne, markerStyle, markerSize, markerOpacity],
   );
 
   return {
     cageFilter,
     selectedEnseigne,
+    markerStyle,
+    markerSize,
+    markerOpacity,
     filterState,
     filteredStores,
     stats,
     toggleCageFilter,
     toggleEnseigne,
+    setMarkerStyle,
+    setMarkerSize,
+    setMarkerOpacity,
     resetFilters,
   };
 }

@@ -5,45 +5,45 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
 
-import {
-  store as defaultStores,
-  enseignes as defaultEnseignes,
-} from '../../_data/store-data';
+import { enseignes as defaultEnseignes, store as defaultStores } from '../../_data/store-data';
 
 import type {
-  StoreMapProps,
+  FilterPanelConfig,
   MapColorPalette,
   MapViewConfig,
   MarkerConfig,
-  TileConfig,
-  StatsBarConfig,
-  FilterPanelConfig,
   PopupConfig,
+  StatsBarConfig,
+  StoreMapProps,
+  TileConfig,
 } from './types';
 import {
   DEFAULT_COLORS,
-  DEFAULT_VIEW,
-  DEFAULT_MARKER,
-  DEFAULT_TILE,
-  DEFAULT_STATS_BAR,
   DEFAULT_FILTER_PANEL,
+  DEFAULT_MARKER,
   DEFAULT_POPUP,
+  DEFAULT_STATS_BAR,
+  DEFAULT_TILE,
+  DEFAULT_VIEW,
 } from './types';
 
-import { createEggIconPair } from './icons';
+import { createIconPairForStyle } from './icons';
 import { useStoreMapFilters } from './hooks';
 
-import { EggMarker, MapFilterPanel, MapInitializer, MapStatsBar } from './components';
+import {
+  EggMarker,
+  MapFilterPanel,
+  MapInitializer,
+  MapSettingsPanel,
+  MapStatsBar,
+} from './components';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    StoreMap — highly customisable Leaflet map component
-   ═══════════════════════════════════════════════════════════════════════════
-
-   Zero-config:   <StoreMap />                         uses built-in data
-   Customised:    <StoreMap colors={…} view={…} />     override any slice
-   Fully custom:  <StoreMap renderPopup={…} />         own popup renderer
-
    ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Aspect ratio (width / height) of the illustrated egg marker. */
+const MARKER_ASPECT = 22 / 28;
 
 export default function StoreMap({
   /* data */
@@ -71,57 +71,56 @@ export default function StoreMap({
   const storeData = stores ?? defaultStores;
   const enseigneData = enseignes ?? defaultEnseignes;
 
-  const colors: MapColorPalette = useMemo(
-    () => ({ ...DEFAULT_COLORS, ...colorsProp }),
-    [colorsProp],
-  );
-  const view: MapViewConfig = useMemo(
-    () => ({ ...DEFAULT_VIEW, ...viewProp }),
-    [viewProp],
-  );
-  const markerCfg: MarkerConfig = useMemo(
-    () => ({ ...DEFAULT_MARKER, ...markerProp }),
-    [markerProp],
-  );
-  const tile: TileConfig = useMemo(
-    () => ({ ...DEFAULT_TILE, ...tileProp }),
-    [tileProp],
-  );
-  const statsBarCfg: StatsBarConfig = useMemo(
-    () => ({ ...DEFAULT_STATS_BAR, ...statsBarProp }),
-    [statsBarProp],
-  );
+  const colors: MapColorPalette = useMemo(() => ({ ...DEFAULT_COLORS, ...colorsProp }), [colorsProp]);
+  const view: MapViewConfig = useMemo(() => ({ ...DEFAULT_VIEW, ...viewProp }), [viewProp]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  const _baseMarkerCfg: MarkerConfig = useMemo(() => ({ ...DEFAULT_MARKER, ...markerProp }), [markerProp]);
+  const tile: TileConfig = useMemo(() => ({ ...DEFAULT_TILE, ...tileProp }), [tileProp]);
+  const statsBarCfg: StatsBarConfig = useMemo(() => ({ ...DEFAULT_STATS_BAR, ...statsBarProp }), [statsBarProp]);
   const filterPanelCfg: FilterPanelConfig = useMemo(
     () => ({ ...DEFAULT_FILTER_PANEL, ...filterPanelProp }),
     [filterPanelProp],
   );
-  const popupCfg: PopupConfig = useMemo(
-    () => ({ ...DEFAULT_POPUP, ...popupProp }),
-    [popupProp],
-  );
+  const popupCfg: PopupConfig = useMemo(() => ({ ...DEFAULT_POPUP, ...popupProp }), [popupProp]);
 
-  /* ── Icons (cached internally) ───────────────────────────────────────── */
-
-  const icons = useMemo(
-    () => createEggIconPair(colors, markerCfg),
-    [colors, markerCfg],
-  );
-
-  /* ── Filter hook ─────────────────────────────────────────────────────── */
+  /* ── Filter + settings hook ──────────────────────────────────────────── */
 
   const {
     cageFilter,
     selectedEnseigne,
+    markerStyle,
+    markerSize,
+    markerOpacity,
     filteredStores,
     stats,
     toggleCageFilter,
     toggleEnseigne,
+    setMarkerStyle,
+    setMarkerSize,
+    setMarkerOpacity,
   } = useStoreMapFilters(storeData, enseigneData);
+
+  /* ── Effective marker size (from numeric slider) ──────────────────────── */
+
+  const markerCfg: MarkerConfig = useMemo(
+    () => ({
+      width: Math.round(markerSize * MARKER_ASPECT),
+      height: markerSize,
+    }),
+    [markerSize],
+  );
+
+  /* ── Icons (rebuild when style / size / opacity change) ──────────────── */
+
+  const icons = useMemo(
+    () => createIconPairForStyle(markerStyle, colors, markerCfg, markerOpacity),
+    [markerStyle, colors, markerCfg, markerOpacity],
+  );
 
   /* ── Enseigne label for stats bar ────────────────────────────────────── */
 
   const enseigneLabel = selectedEnseigne
-    ? enseigneData.find((e) => e.id === selectedEnseigne)?.name ?? ''
+    ? (enseigneData.find((e) => e.id === selectedEnseigne)?.name ?? '')
     : 'Tous les magasins';
 
   /* ── Render ──────────────────────────────────────────────────────────── */
@@ -145,11 +144,12 @@ export default function StoreMap({
       >
         <MapInitializer view={view} />
 
-        <TileLayer url={tile.url} attribution={tile.attribution} />
+        {/* key forces TileLayer remount when tile source changes */}
+        <TileLayer key={tile.url} url={tile.url} attribution={tile.attribution} />
 
         {filteredStores.map((s, i) => (
           <EggMarker
-            key={`${s.category}-${i}`}
+            key={`${s.category}-${i}-${markerStyle}-${markerSize}-${markerOpacity}`}
             store={s}
             cageIcon={icons.cage}
             freeIcon={icons.free}
@@ -173,6 +173,18 @@ export default function StoreMap({
             ? () => renderStatsBar({ total: stats.total, withCage: stats.withCage, label: enseigneLabel })
             : undefined
         }
+      />
+
+      {/* ─── Settings panel (top-right) ─── */}
+      <MapSettingsPanel
+        currentStyle={markerStyle}
+        onChangeStyle={setMarkerStyle}
+        markerSize={markerSize}
+        onChangeMarkerSize={setMarkerSize}
+        markerOpacity={markerOpacity}
+        onChangeMarkerOpacity={setMarkerOpacity}
+        storeCount={filteredStores.length}
+        colors={colors}
       />
 
       {/* ─── Filter panel ─── */}

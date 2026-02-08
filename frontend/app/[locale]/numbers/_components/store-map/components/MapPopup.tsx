@@ -2,7 +2,12 @@
 
 import type { Store, MapColorPalette, PopupConfig } from '../types';
 import { DEFAULT_COLORS, DEFAULT_POPUP } from '../types';
-import { eggSvg } from '../icons';
+
+/** Illustrated egg icons used in popup status badge */
+const POPUP_ICONS = {
+  cage: '/logo/marker_cage_egg.svg',
+  free: '/logo/marker_free_egg.svg',
+} as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MapPopup — rich, compact popup card for a single store
@@ -23,7 +28,7 @@ export default function MapPopup({
   const accentColor = isCage ? colors.cage : colors.noCage;
   const bgTint = isCage ? 'rgba(255,88,75,0.07)' : 'rgba(34,197,94,0.07)';
   const statusLabel = isCage ? "Œufs cage" : "Hors cage";
-  const statusIcon = eggSvg(accentColor, isCage ? colors.cageStroke : colors.noCageStroke, 12, 16);
+  const statusIconSrc = isCage ? POPUP_ICONS.cage : POPUP_ICONS.free;
 
   return (
     <div className="store-popup" style={{ minWidth: 180, maxWidth: 240 }}>
@@ -52,10 +57,7 @@ export default function MapPopup({
             className="flex items-center gap-1.5 rounded-full px-2 py-[3px] w-fit"
             style={{ backgroundColor: bgTint }}
           >
-            <span
-              className="inline-flex shrink-0"
-              dangerouslySetInnerHTML={{ __html: statusIcon }}
-            />
+            <img src={statusIconSrc} alt="" className="w-[12px] h-[16px] shrink-0" />
             <span
               className="text-[11px] font-bold leading-none"
               style={{ color: accentColor }}

@@ -2,12 +2,17 @@
 
 import type { CageFilterValue, MapColorPalette, FilterPanelConfig, EnseigneConfig } from '../types';
 import { DEFAULT_COLORS, DEFAULT_FILTER_PANEL } from '../types';
-import { eggSvg } from '../icons';
 import clsx from 'clsx';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MapFilterPanel — cage toggles + enseigne logo grid
    ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Illustrated egg icons used in filter pill buttons */
+const FILTER_ICONS = {
+  cage: '/logo/marker_cage_egg.svg',
+  free: '/logo/marker_free_egg.svg',
+} as const;
 
 const POSITION_CLASSES: Record<FilterPanelConfig['position'], string> = {
   'top-left': 'top-3 left-3',
@@ -21,18 +26,16 @@ const POSITION_CLASSES: Record<FilterPanelConfig['position'], string> = {
 function CageFilterButton({
   active,
   color,
-  stroke,
+  icon,
   label,
   onClick,
 }: {
   active: boolean;
   color: string;
-  stroke: string;
+  icon: string;
   label: string;
   onClick: () => void;
 }) {
-  const egg = eggSvg(color, stroke, 14, 18);
-
   return (
     <button
       onClick={onClick}
@@ -51,7 +54,7 @@ function CageFilterButton({
           : {}
       }
     >
-      <span className="inline-flex shrink-0" dangerouslySetInnerHTML={{ __html: egg }} />
+      <img src={icon} alt="" className="w-[14px] h-[18px] shrink-0" />
       <span>{label}</span>
     </button>
   );
@@ -98,7 +101,9 @@ type MapFilterPanelProps = {
   cageFilter: CageFilterValue;
   selectedEnseigne: string | null;
   enseigneList: EnseigneConfig[];
+  // eslint-disable-next-line no-unused-vars
   onToggleCage: (value: CageFilterValue) => void;
+  // eslint-disable-next-line no-unused-vars
   onToggleEnseigne: (id: string) => void;
   colors?: MapColorPalette;
   config?: FilterPanelConfig;
@@ -120,18 +125,18 @@ export default function MapFilterPanel({
       <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/60 px-3 py-2.5">
         {/* ── Cage filter pills ──────────────────────────────────────────── */}
         {config.showCageFilter && (
-          <div className="flex items-center gap-1.5 mb-2">
+          <div className="flex items-center justify-around mb-2">
             <CageFilterButton
               active={cageFilter === 'cage'}
               color={colors.cage}
-              stroke={colors.cageStroke}
+              icon={FILTER_ICONS.cage}
               label="Œufs cage"
               onClick={() => onToggleCage('cage')}
             />
             <CageFilterButton
               active={cageFilter === 'noCage'}
               color={colors.noCage}
-              stroke={colors.noCageStroke}
+              icon={FILTER_ICONS.free}
               label="Hors cage"
               onClick={() => onToggleCage('noCage')}
             />

@@ -3,8 +3,13 @@
 import type { ReactNode } from 'react';
 import type { MapColorPalette, StatsBarConfig, EnseigneConfig } from '../types';
 import { DEFAULT_COLORS, DEFAULT_STATS_BAR } from '../types';
-import { eggSvg } from '../icons';
 import clsx from 'clsx';
+
+/** Illustrated egg icons used in stats display */
+const STATS_ICONS = {
+  cage: '/logo/marker_cage_egg.svg',
+  free: '/logo/marker_free_egg.svg',
+} as const;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MapStatsBar — floating stats overlay with dual-egg visual
@@ -24,6 +29,7 @@ type MapStatsBarProps = {
   enseigneList: EnseigneConfig[];
   colors?: MapColorPalette;
   config?: StatsBarConfig;
+  // eslint-disable-next-line no-unused-vars
   renderOverride?: (stats: { total: number; withCage: number; label: string }) => ReactNode;
 };
 
@@ -43,9 +49,6 @@ export default function MapStatsBar({
   const label = selectedEnseigne
     ? enseigneList.find((e) => e.id === selectedEnseigne)?.name ?? ''
     : 'Tous les magasins';
-
-  const cageEgg = eggSvg(colors.cage, colors.cageStroke, 14, 18);
-  const freeEgg = eggSvg(colors.noCage, colors.noCageStroke, 14, 18);
 
   /* ── Custom renderer ────────────────────────────────────────────────── */
   if (renderOverride) {
@@ -72,7 +75,7 @@ export default function MapStatsBar({
         <div className="px-3.5 pb-1">
           {/* Cage row */}
           <div className="flex items-center gap-2 py-1">
-            <span className="inline-flex shrink-0" dangerouslySetInnerHTML={{ __html: cageEgg }} />
+            <img src={STATS_ICONS.cage} alt="" className="w-[14px] h-[18px] shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline justify-between">
                 <span className="text-[18px] font-black tabular-nums leading-none" style={{ color: colors.cage }}>
@@ -86,7 +89,7 @@ export default function MapStatsBar({
 
           {/* Free row */}
           <div className="flex items-center gap-2 py-1">
-            <span className="inline-flex shrink-0" dangerouslySetInnerHTML={{ __html: freeEgg }} />
+            <img src={STATS_ICONS.free} alt="" className="w-[14px] h-[18px] shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline justify-between">
                 <span className="text-[18px] font-black tabular-nums leading-none" style={{ color: colors.noCage }}>

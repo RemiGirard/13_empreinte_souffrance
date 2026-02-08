@@ -28,13 +28,13 @@
 export { default } from './StoreMap';
 
 /* Sub-components for advanced composition */
-export { EggMarker, MapFilterPanel, MapInitializer, MapPopup, MapStatsBar } from './components';
+export { EggMarker, MapFilterPanel, MapInitializer, MapSettingsPanel, MapPopup, MapStatsBar } from './components';
 
 /* Hook */
 export { useStoreMapFilters } from './hooks';
 
 /* Icon utilities */
-export { createEggIcon, createEggIconPair, eggSvg } from './icons';
+export { createEggIcon, createEggIconPair, createCageEggIcon, createFreeEggIcon, createIconPairForStyle, eggSvg } from './icons';
 
 /* Types */
 export type {
@@ -45,6 +45,7 @@ export type {
   MapColorPalette,
   MapViewConfig,
   MarkerConfig,
+  MarkerStyle,
   PopupConfig,
   StatsBarConfig,
   Store,
@@ -57,6 +58,8 @@ export {
   DEFAULT_COLORS,
   DEFAULT_FILTER_PANEL,
   DEFAULT_MARKER,
+  DEFAULT_MARKER_OPACITY,
+  DEFAULT_MARKER_SIZE,
   DEFAULT_POPUP,
   DEFAULT_STATS_BAR,
   DEFAULT_TILE,

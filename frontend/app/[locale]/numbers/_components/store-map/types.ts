@@ -26,10 +26,18 @@ export type { EnseigneConfig };
 /** The three possible cage-filter states. */
 export type CageFilterValue = 'all' | 'cage' | 'noCage';
 
-/** Snapshot of all active filters (returned by the hook). */
+/** Available marker icon styles. */
+export type MarkerStyle = 'egg' | 'circle' | 'illustrated';
+
+/** Snapshot of all active filters + user settings (returned by the hook). */
 export type FilterState = {
   cageFilter: CageFilterValue;
   selectedEnseigne: string | null;
+  markerStyle: MarkerStyle;
+  /** Marker height in px (width auto-computed from aspect ratio). */
+  markerSize: number;
+  /** Marker opacity 0.2–1. */
+  markerOpacity: number;
 };
 
 /* ─── Color palette ───────────────────────────────────────────────────────── */
@@ -150,8 +158,10 @@ export type StoreMapProps = {
 
   /* ── Render overrides ─────────────────────────────────────────────────── */
   /** Replace the default popup content with a fully custom renderer. */
+  // eslint-disable-next-line no-unused-vars
   renderPopup?: (store: Store) => ReactNode;
   /** Replace the default stats bar with a fully custom renderer. */
+  // eslint-disable-next-line no-unused-vars
   renderStatsBar?: (stats: { total: number; withCage: number; label: string }) => ReactNode;
   /** Slot for extra content rendered inside the root container. */
   children?: ReactNode;
@@ -170,22 +180,28 @@ export const DEFAULT_COLORS: MapColorPalette = {
 
 export const DEFAULT_VIEW: MapViewConfig = {
   center: [46.8, 2.5],
-  desktopZoom: 6,
-  mobileZoom: 5,
+  desktopZoom: 5,
+  mobileZoom: 4,
   minZoom: 4,
   maxZoom: 18,
   mobileBreakpoint: 768,
 };
 
 export const DEFAULT_MARKER: MarkerConfig = {
-  width: 18,
-  height: 24,
+  width: 22,
+  height: 28,
 };
 
 export const DEFAULT_TILE: TileConfig = {
   url: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
   attribution: '&copy; OpenStreetMap France',
 };
+
+/** Default marker height in px (width auto-computed from aspect ratio). */
+export const DEFAULT_MARKER_SIZE = 28;
+
+/** Default marker opacity (1.0 = fully opaque). */
+export const DEFAULT_MARKER_OPACITY = 1.0;
 
 export const DEFAULT_STATS_BAR: StatsBarConfig = {
   visible: false,
