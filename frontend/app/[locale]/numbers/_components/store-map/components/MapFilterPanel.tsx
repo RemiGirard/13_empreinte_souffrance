@@ -74,27 +74,37 @@ function EnseigneButton({
       title={enseigne.name}
       aria-pressed={isSelected}
       className={clsx(
-        'group flex items-center justify-center rounded-full p-1.5',
+        'group relative flex items-center justify-center overflow-hidden',
+        'rounded-xl w-[48px] h-[40px]',
         'transition-all duration-200 cursor-pointer select-none',
         isSelected
-          ? 'shadow-md scale-[1.08] bg-white'
-          : 'bg-white/80 hover:bg-white hover:shadow-sm hover:scale-[1.04]',
+          ? 'shadow-lg scale-[1.08]'
+          : 'hover:shadow-md hover:scale-[1.04]',
       )}
       style={{
-        border: `2.5px solid ${isSelected ? brandColor : 'transparent'}`,
-        boxShadow: isSelected
-          ? `0 0 0 1px ${brandColor}30, 0 4px 12px -2px ${brandColor}25`
-          : undefined,
+        backgroundColor: isSelected ? `${brandColor}10` : 'rgba(255,255,255,0.9)',
+        border: `2px solid ${isSelected ? brandColor : 'rgba(0,0,0,0.06)'}`,
       }}
     >
+      {/* Logo fills the button */}
       <img
         alt={enseigne.name}
         src={enseigne.logo}
         className={clsx(
-          'w-7 h-7 object-contain transition-all duration-200',
-          isSelected ? 'brightness-110 saturate-110' : 'opacity-60 grayscale-[30%] group-hover:opacity-100 group-hover:grayscale-0',
+          'w-[36px] h-[28px] object-contain transition-all duration-200',
+          isSelected
+            ? 'brightness-105 saturate-110'
+            : 'opacity-50 grayscale-[40%] group-hover:opacity-90 group-hover:grayscale-0',
         )}
       />
+
+      {/* Bottom accent bar when selected */}
+      {isSelected && (
+        <div
+          className="absolute bottom-0 left-1 right-1 h-[2.5px] rounded-full"
+          style={{ backgroundColor: brandColor }}
+        />
+      )}
     </button>
   );
 }
@@ -153,7 +163,7 @@ export default function MapFilterPanel({
         {/* ── Enseigne grid ──────────────────────────────────────────────── */}
         {config.showEnseigneFilter && (
           <div
-            className="grid gap-1"
+            className="grid gap-1.5"
             style={{
               gridTemplateColumns: `repeat(${config.enseigneGridCols}, minmax(0, 1fr))`,
             }}
