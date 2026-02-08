@@ -60,6 +60,7 @@ export default async function NumbersPage() {
         text={
           'La cage occupait encore une part minoriaire mais signifcative en 2025. Le plein air est le mode délevage le plus répandu en supermarché. '
         }
+        className="!px-3 md:!px-8"
         innerClassName=""
         contentClassName="justify-end"
       >

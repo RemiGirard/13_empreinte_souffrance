@@ -62,9 +62,9 @@ function createIllustratedIcon(
   if (cached) return cached;
 
   const src = type === 'cage' ? MARKER_ICONS.cage : MARKER_ICONS.free;
-  const opStyle = opacity < 1 ? ` style="opacity:${opacity}"` : '';
+  const styles = `width:${width}px;height:${height}px${opacity < 1 ? `;opacity:${opacity}` : ''}`;
   const icon = L.divIcon({
-    html: `<img src="${src}" width="${width}" height="${height}" alt=""${opStyle} />`,
+    html: `<img src="${src}" width="${width}" height="${height}" style="${styles}" alt="" />`,
     className: 'egg-marker',
     iconSize: [width, height],
     iconAnchor: [width / 2, height],

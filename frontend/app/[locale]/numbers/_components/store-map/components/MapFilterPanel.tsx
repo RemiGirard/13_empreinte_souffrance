@@ -1,11 +1,13 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import type { CageFilterValue, MapColorPalette, FilterPanelConfig, EnseigneConfig } from '../types';
 import { DEFAULT_COLORS, DEFAULT_FILTER_PANEL } from '../types';
 import clsx from 'clsx';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MapFilterPanel — cage toggles + enseigne logo grid
+   Collapsible on mobile (closed by default), always open on desktop.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /** Illustrated egg icons used in filter pill buttons */
@@ -20,6 +22,9 @@ const POSITION_CLASSES: Record<FilterPanelConfig['position'], string> = {
   'bottom-left': 'bottom-3 left-3',
   'bottom-right': 'bottom-3 right-3',
 };
+
+/** Breakpoint (px) below which the panel starts collapsed. */
+const MOBILE_BP = 768;
 
 /* ─── Sub-components ──────────────────────────────────────────────────────── */
 
@@ -95,6 +100,27 @@ function EnseigneButton({
   );
 }
 
+/* ─── Toggle button (filter icon) ─────────────────────────────────────────── */
+
+function FilterIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <path
+        d="M1.5 2.5H14.5L9.5 8.5V12.5L6.5 14V8.5L1.5 2.5Z"
+        stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function ChevronDownIcon({ className }: { className?: string }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /* ─── Main panel ──────────────────────────────────────────────────────────── */
 
 type MapFilterPanelProps = {
@@ -118,56 +144,115 @@ export default function MapFilterPanel({
   colors = DEFAULT_COLORS,
   config = DEFAULT_FILTER_PANEL,
 }: MapFilterPanelProps) {
+  /* ── Mobile detection ─────────────────────────────────────────────────── */
+  const [isMobile, setIsMobile] = useState(false);
+  const [expanded, setExpanded] = useState(true); // desktop: always open
+
+  useEffect(() => {
+    const check = () => {
+      const mobile = window.innerWidth < MOBILE_BP;
+      setIsMobile(mobile);
+      // On first mount: close on mobile, open on desktop
+      if (mobile) setExpanded(false);
+      else setExpanded(true);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   if (!config.visible) return null;
 
+  /* ── Has active filters? (show indicator dot on collapsed button) ──── */
+  const hasActiveFilter = cageFilter !== 'all' || selectedEnseigne !== null;
+
   return (
-    <div className={clsx('absolute z-[2]', POSITION_CLASSES[config.position])}>
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/60 px-3 py-2.5">
-        {/* ── Cage filter pills ──────────────────────────────────────────── */}
-        {config.showCageFilter && (
-          <div className="flex items-center justify-around mb-2">
-            <CageFilterButton
-              active={cageFilter === 'cage'}
-              color={colors.cage}
-              icon={FILTER_ICONS.cage}
-              label="Œufs cage"
-              onClick={() => onToggleCage('cage')}
-            />
-            <CageFilterButton
-              active={cageFilter === 'noCage'}
-              color={colors.noCage}
-              icon={FILTER_ICONS.free}
-              label="Hors cage"
-              onClick={() => onToggleCage('noCage')}
-            />
-          </div>
-        )}
+    <div className={clsx('absolute z-[2] max-w-[calc(100%-24px)]', POSITION_CLASSES[config.position])}>
+      {/* ── Collapsed state: toggle button (mobile only) ──────────────── */}
+      {isMobile && !expanded && (
+        <button
+          onClick={() => setExpanded(true)}
+          title="Filtres"
+          className={clsx(
+            'relative flex items-center gap-1.5',
+            'bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-white/60',
+            'px-3 py-2 text-gray-500 hover:text-gray-700 hover:shadow-xl',
+            'transition-all duration-200 cursor-pointer select-none',
+          )}
+        >
+          <FilterIcon />
+          <span className="text-[11px] font-bold">Filtres</span>
+          {hasActiveFilter && (
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-white" />
+          )}
+        </button>
+      )}
 
-        {/* ── Divider ────────────────────────────────────────────────────── */}
-        {config.showCageFilter && config.showEnseigneFilter && (
-          <div className="h-px bg-gray-200/60 mb-2" />
-        )}
+      {/* ── Expanded state: full panel ────────────────────────────────── */}
+      {expanded && (
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/60 px-3 py-2.5">
+          {/* ── Close button (mobile only) ───────────────────────────── */}
+          {isMobile && (
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+                Filtres
+              </span>
+              <button
+                onClick={() => setExpanded(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer p-0.5"
+                title="Réduire"
+              >
+                <ChevronDownIcon />
+              </button>
+            </div>
+          )}
 
-        {/* ── Enseigne logo grid ─────────────────────────────────────────── */}
-        {config.showEnseigneFilter && (
-          <div
-            className="grid items-center justify-items-center"
-            style={{
-              gridTemplateColumns: `repeat(${config.enseigneGridCols}, 48px)`,
-              gap: '8px 12px',
-            }}
-          >
-            {enseigneList.map((enseigne) => (
-              <EnseigneButton
-                key={enseigne.id}
-                enseigne={enseigne}
-                isSelected={selectedEnseigne === enseigne.id}
-                onClick={() => onToggleEnseigne(enseigne.id)}
+          {/* ── Cage filter pills ──────────────────────────────────────── */}
+          {config.showCageFilter && (
+            <div className="flex items-center justify-around mb-2">
+              <CageFilterButton
+                active={cageFilter === 'cage'}
+                color={colors.cage}
+                icon={FILTER_ICONS.cage}
+                label="Œufs cage"
+                onClick={() => onToggleCage('cage')}
               />
-            ))}
-          </div>
-        )}
-      </div>
+              <CageFilterButton
+                active={cageFilter === 'noCage'}
+                color={colors.noCage}
+                icon={FILTER_ICONS.free}
+                label="Hors cage"
+                onClick={() => onToggleCage('noCage')}
+              />
+            </div>
+          )}
+
+          {/* ── Divider ────────────────────────────────────────────────── */}
+          {config.showCageFilter && config.showEnseigneFilter && (
+            <div className="h-px bg-gray-200/60 mb-2" />
+          )}
+
+          {/* ── Enseigne logo grid ─────────────────────────────────────── */}
+          {config.showEnseigneFilter && (
+            <div
+              className="grid items-center justify-items-center"
+              style={{
+                gridTemplateColumns: `repeat(${config.enseigneGridCols}, minmax(36px, 48px))`,
+                gap: '8px 10px',
+              }}
+            >
+              {enseigneList.map((enseigne) => (
+                <EnseigneButton
+                  key={enseigne.id}
+                  enseigne={enseigne}
+                  isSelected={selectedEnseigne === enseigne.id}
+                  onClick={() => onToggleEnseigne(enseigne.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

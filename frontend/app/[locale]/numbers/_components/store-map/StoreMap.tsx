@@ -128,7 +128,7 @@ export default function StoreMap({
   return (
     <div
       className={clsx(
-        'relative w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200/60',
+        'relative w-full overflow-hidden shadow-lg border border-gray-200/60 rounded-2xl',
         heightClassName,
         className,
       )}
@@ -144,7 +144,6 @@ export default function StoreMap({
       >
         <MapInitializer view={view} />
 
-        {/* key forces TileLayer remount when tile source changes */}
         <TileLayer key={tile.url} url={tile.url} attribution={tile.attribution} />
 
         {filteredStores.map((s, i) => (

@@ -180,8 +180,8 @@ export const DEFAULT_COLORS: MapColorPalette = {
 
 export const DEFAULT_VIEW: MapViewConfig = {
   center: [46.8, 2.5],
-  desktopZoom: 5,
-  mobileZoom: 4,
+  desktopZoom: 5.5,
+  mobileZoom: 5,
   minZoom: 4,
   maxZoom: 18,
   mobileBreakpoint: 768,
