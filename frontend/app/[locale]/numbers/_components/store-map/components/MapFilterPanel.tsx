@@ -2,13 +2,13 @@
 
 import type { CageFilterValue, MapColorPalette, FilterPanelConfig, EnseigneConfig } from '../types';
 import { DEFAULT_COLORS, DEFAULT_FILTER_PANEL } from '../types';
+import { eggSvg } from '../icons';
 import clsx from 'clsx';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MapFilterPanel — cage toggles + enseigne grid
+   MapFilterPanel — cage toggles + enseigne logo grid
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/** Position → Tailwind classes mapping. */
 const POSITION_CLASSES: Record<FilterPanelConfig['position'], string> = {
   'top-left': 'top-3 left-3',
   'top-right': 'top-3 right-3',
@@ -21,30 +21,38 @@ const POSITION_CLASSES: Record<FilterPanelConfig['position'], string> = {
 function CageFilterButton({
   active,
   color,
+  stroke,
   label,
-  icon,
   onClick,
 }: {
   active: boolean;
   color: string;
+  stroke: string;
   label: string;
-  icon: string;
   onClick: () => void;
 }) {
+  const egg = eggSvg(color, stroke, 14, 18);
+
   return (
     <button
       onClick={onClick}
       title={label}
       aria-pressed={active}
       className={clsx(
-        'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold',
-        'border transition-all cursor-pointer select-none whitespace-nowrap',
-        active ? 'shadow-sm border-current' : 'border-gray-200 hover:border-gray-400',
+        'flex items-center gap-1.5 rounded-full pl-1.5 pr-3 py-1 text-[11px] font-bold',
+        'border-2 transition-all duration-200 cursor-pointer select-none whitespace-nowrap',
+        active
+          ? 'shadow-md scale-[1.02]'
+          : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:shadow-sm',
       )}
-      style={active ? { color, borderColor: color, backgroundColor: `${color}18` } : {}}
+      style={
+        active
+          ? { color, borderColor: color, backgroundColor: `${color}12` }
+          : {}
+      }
     >
-      <img alt="" src={icon} className="w-3.5 h-3.5" aria-hidden="true" />
-      <span className="hidden sm:inline">{label}</span>
+      <span className="inline-flex shrink-0" dangerouslySetInnerHTML={{ __html: egg }} />
+      <span>{label}</span>
     </button>
   );
 }
@@ -58,23 +66,34 @@ function EnseigneButton({
   isSelected: boolean;
   onClick: () => void;
 }) {
+  const brandColor = enseigne.color;
+
   return (
     <button
       onClick={onClick}
       title={enseigne.name}
       aria-pressed={isSelected}
       className={clsx(
-        'flex items-center justify-center rounded-lg p-1 border-2',
-        'transition-all cursor-pointer select-none',
+        'group flex items-center justify-center rounded-full p-1.5',
+        'transition-all duration-200 cursor-pointer select-none',
         isSelected
-          ? 'border-blue-600 bg-blue-50 shadow-sm'
-          : 'border-gray-200 bg-white hover:border-blue-300',
+          ? 'shadow-md scale-[1.08] bg-white'
+          : 'bg-white/80 hover:bg-white hover:shadow-sm hover:scale-[1.04]',
       )}
+      style={{
+        border: `2.5px solid ${isSelected ? brandColor : 'transparent'}`,
+        boxShadow: isSelected
+          ? `0 0 0 1px ${brandColor}30, 0 4px 12px -2px ${brandColor}25`
+          : undefined,
+      }}
     >
       <img
         alt={enseigne.name}
         src={enseigne.logo}
-        className="w-7 h-5 object-contain"
+        className={clsx(
+          'w-7 h-7 object-contain transition-all duration-200',
+          isSelected ? 'brightness-110 saturate-110' : 'opacity-60 grayscale-[30%] group-hover:opacity-100 group-hover:grayscale-0',
+        )}
       />
     </button>
   );
@@ -105,22 +124,22 @@ export default function MapFilterPanel({
 
   return (
     <div className={clsx('absolute z-[2]', POSITION_CLASSES[config.position])}>
-      <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 p-2.5 max-w-[340px]">
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/60 p-2.5">
         {/* ── Cage filter pills ──────────────────────────────────────────── */}
         {config.showCageFilter && (
           <div className="flex items-center gap-1.5 mb-2">
             <CageFilterButton
               active={cageFilter === 'cage'}
               color={colors.cage}
+              stroke={colors.cageStroke}
               label="Œufs cage"
-              icon="/logo/egg_marker_cage.svg"
               onClick={() => onToggleCage('cage')}
             />
             <CageFilterButton
               active={cageFilter === 'noCage'}
               color={colors.noCage}
-              label="Pas d'œufs cage"
-              icon="/logo/egg_marker_free.svg"
+              stroke={colors.noCageStroke}
+              label="Hors cage"
               onClick={() => onToggleCage('noCage')}
             />
           </div>
@@ -128,14 +147,16 @@ export default function MapFilterPanel({
 
         {/* ── Divider ────────────────────────────────────────────────────── */}
         {config.showCageFilter && config.showEnseigneFilter && (
-          <div className="h-px bg-gray-200 mb-2" />
+          <div className="h-px bg-gray-200/60 mb-2" />
         )}
 
         {/* ── Enseigne grid ──────────────────────────────────────────────── */}
         {config.showEnseigneFilter && (
           <div
-            className="grid gap-1.5"
-            style={{ gridTemplateColumns: `repeat(${config.enseigneGridCols}, minmax(0, 1fr))` }}
+            className="grid gap-1"
+            style={{
+              gridTemplateColumns: `repeat(${config.enseigneGridCols}, minmax(0, 1fr))`,
+            }}
           >
             {enseigneList.map((enseigne) => (
               <EnseigneButton

@@ -3,13 +3,13 @@
 import type { ReactNode } from 'react';
 import type { MapColorPalette, StatsBarConfig, EnseigneConfig } from '../types';
 import { DEFAULT_COLORS, DEFAULT_STATS_BAR } from '../types';
+import { eggSvg } from '../icons';
 import clsx from 'clsx';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MapStatsBar — floating stats overlay
+   MapStatsBar — floating stats overlay with dual-egg visual
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/** Position → Tailwind classes mapping. */
 const POSITION_CLASSES: Record<StatsBarConfig['position'], string> = {
   'top-left': 'top-3 left-3 sm:right-auto sm:left-3',
   'top-right': 'top-3 left-3 right-3 sm:left-auto sm:right-3',
@@ -24,7 +24,6 @@ type MapStatsBarProps = {
   enseigneList: EnseigneConfig[];
   colors?: MapColorPalette;
   config?: StatsBarConfig;
-  /** Completely replace the default rendering. */
   renderOverride?: (stats: { total: number; withCage: number; label: string }) => ReactNode;
 };
 
@@ -39,20 +38,19 @@ export default function MapStatsBar({
 }: MapStatsBarProps) {
   if (!config.visible) return null;
 
+  const withoutCage = total - withCage;
   const pct = total > 0 ? Math.round((withCage / total) * 100) : 0;
   const label = selectedEnseigne
     ? enseigneList.find((e) => e.id === selectedEnseigne)?.name ?? ''
     : 'Tous les magasins';
 
-  /* ── Custom renderer ──────────────────────────────────────────────────── */
+  const cageEgg = eggSvg(colors.cage, colors.cageStroke, 14, 18);
+  const freeEgg = eggSvg(colors.noCage, colors.noCageStroke, 14, 18);
+
+  /* ── Custom renderer ────────────────────────────────────────────────── */
   if (renderOverride) {
     return (
-      <div
-        className={clsx(
-          'absolute sm:w-[260px] z-[2] pointer-events-none',
-          POSITION_CLASSES[config.position],
-        )}
-      >
+      <div className={clsx('absolute sm:w-[280px] z-[2] pointer-events-none', POSITION_CLASSES[config.position])}>
         <div className="pointer-events-auto">
           {renderOverride({ total, withCage, label })}
         </div>
@@ -60,39 +58,60 @@ export default function MapStatsBar({
     );
   }
 
-  /* ── Default renderer ─────────────────────────────────────────────────── */
+  /* ── Default renderer ───────────────────────────────────────────────── */
   return (
-    <div
-      className={clsx(
-        'absolute sm:w-[260px] z-[2] pointer-events-none',
-        POSITION_CLASSES[config.position],
-      )}
-    >
-      <div className="pointer-events-auto bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 px-3 py-2.5">
-        {/* Label */}
-        <p className="text-[11px] text-gray-500 font-medium truncate">{label}</p>
-
-        {/* Count */}
-        <div className="flex items-baseline gap-1.5 mt-0.5">
-          <span
-            className="text-xl font-black tabular-nums"
-            style={{ color: colors.cage }}
-          >
-            {withCage}
-          </span>
-          <span className="text-[11px] text-gray-400">
-            / {total} magasins avec œufs cage
-          </span>
+    <div className={clsx('absolute sm:w-[280px] z-[2] pointer-events-none', POSITION_CLASSES[config.position])}>
+      <div className="pointer-events-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        {/* ── Header ────────────────────────────────────────────────────── */}
+        <div className="px-3.5 pt-2.5 pb-1.5">
+          <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">{label}</p>
+          <p className="text-[10px] text-gray-300 font-medium">{total} magasins inspectés</p>
         </div>
 
-        {/* Progress bar */}
-        <div className="mt-1.5 h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{ width: `${pct}%`, backgroundColor: colors.cage }}
-          />
+        {/* ── Two stat rows ─────────────────────────────────────────────── */}
+        <div className="px-3.5 pb-1">
+          {/* Cage row */}
+          <div className="flex items-center gap-2 py-1">
+            <span className="inline-flex shrink-0" dangerouslySetInnerHTML={{ __html: cageEgg }} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline justify-between">
+                <span className="text-[18px] font-black tabular-nums leading-none" style={{ color: colors.cage }}>
+                  {withCage}
+                </span>
+                <span className="text-[10px] text-gray-400 font-semibold">{pct}%</span>
+              </div>
+              <p className="text-[10px] text-gray-400 leading-tight mt-0.5">avec œufs cage</p>
+            </div>
+          </div>
+
+          {/* Free row */}
+          <div className="flex items-center gap-2 py-1">
+            <span className="inline-flex shrink-0" dangerouslySetInnerHTML={{ __html: freeEgg }} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline justify-between">
+                <span className="text-[18px] font-black tabular-nums leading-none" style={{ color: colors.noCage }}>
+                  {withoutCage}
+                </span>
+                <span className="text-[10px] text-gray-400 font-semibold">{100 - pct}%</span>
+              </div>
+              <p className="text-[10px] text-gray-400 leading-tight mt-0.5">sans œufs cage</p>
+            </div>
+          </div>
         </div>
-        <p className="text-right text-[10px] text-gray-400 mt-0.5">{pct} %</p>
+
+        {/* ── Stacked progress bar ──────────────────────────────────────── */}
+        <div className="px-3.5 pb-3">
+          <div className="flex h-2 w-full rounded-full overflow-hidden bg-gray-100 gap-px">
+            <div
+              className="h-full rounded-l-full transition-all duration-500"
+              style={{ width: `${pct}%`, backgroundColor: colors.cage }}
+            />
+            <div
+              className="h-full rounded-r-full transition-all duration-500"
+              style={{ width: `${100 - pct}%`, backgroundColor: colors.noCage }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

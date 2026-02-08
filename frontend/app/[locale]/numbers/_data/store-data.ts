@@ -12,6 +12,8 @@ export type EnseigneConfig = {
   id: string;
   name: string;
   logo: string;
+  /** Brand color used for selected-state border / accent. */
+  color: string;
 };
 
 export const enseignes: EnseigneConfig[] = [
@@ -19,41 +21,49 @@ export const enseignes: EnseigneConfig[] = [
     id: 'carrefour',
     name: 'Carrefour',
     logo: '/logo/carrefour_logo.svg',
+    color: '#004E9F',
   },
   {
     id: 'auchan',
     name: 'Auchan',
     logo: '/logo/auchan_logo.svg',
+    color: '#E00034',
   },
   {
     id: 'lidl',
     name: 'Lidl',
     logo: '/logo/lidl_logo.svg',
+    color: '#0050AA',
   },
   {
     id: 'leclerc',
     name: 'Leclerc',
     logo: '/logo/leclerc_logo.png',
+    color: '#005DA6',
   },
   {
     id: 'systemu',
     name: 'Supermarché U',
     logo: '/logo/U_logo.png',
+    color: '#E2001A',
   },
   {
     id: 'aldi',
     name: 'Aldi',
     logo: '/logo/aldi_logo.svg',
+    color: '#00599C',
   },
   {
     id: 'monoprix',
     name: 'Monoprix',
     logo: '/logo/monoprix_logo.svg',
+    color: '#96172E',
   },
   {
     id: 'intermarche',
     name: 'Intermarché',
     logo: '/logo/intermarche_logo.png',
+    color: '#EE2E24',
   },
 ];
 

@@ -129,7 +129,7 @@ export default function StoreMap({
   return (
     <div
       className={clsx(
-        'relative w-full rounded-xl overflow-hidden shadow-md border border-gray-100',
+        'relative w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200/60',
         heightClassName,
         className,
       )}

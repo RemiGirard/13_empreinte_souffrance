@@ -188,7 +188,7 @@ export const DEFAULT_TILE: TileConfig = {
 };
 
 export const DEFAULT_STATS_BAR: StatsBarConfig = {
-  visible: true,
+  visible: false,
   position: 'top-right',
 };
 
