@@ -15,6 +15,7 @@ import clsx from 'clsx';
 const STYLE_OPTIONS: { id: MarkerStyle; label: string }[] = [
   { id: 'illustrated', label: 'Illustrés' },
   { id: 'illustrated-noborder', label: 'Sans contour' },
+  { id: 'illustrated-inverted', label: 'Inversés' },
   { id: 'egg', label: 'Œufs unis' },
   { id: 'circle', label: 'Cercles' },
 ];
@@ -24,6 +25,8 @@ const ILLUSTRATED_ICONS = {
   free: '/logo/marker_free_egg.svg',
   cageNoBorder: '/logo/marker_cage_egg_noborder.svg',
   freeNoBorder: '/logo/marker_free_egg_noborder.svg',
+  cageInverted: '/logo/marker_cage_egg_inverted.svg',
+  freeInverted: '/logo/marker_free_egg_inverted.svg',
 } as const;
 
 /* ─── Style previews ──────────────────────────────────────────────────── */
@@ -79,12 +82,23 @@ function PreviewIllustratedNoBorder() {
   );
 }
 
+function PreviewIllustratedInverted() {
+  return (
+    <span className="inline-flex items-end gap-1">
+      <img src={ILLUSTRATED_ICONS.cageInverted} alt="" className="w-[16px] h-[20px]" />
+      <img src={ILLUSTRATED_ICONS.freeInverted} alt="" className="w-[16px] h-[20px]" />
+    </span>
+  );
+}
+
 function StylePreview({ style, colors }: { style: MarkerStyle; colors: MapColorPalette }) {
   switch (style) {
     case 'illustrated':
       return <PreviewIllustrated />;
     case 'illustrated-noborder':
       return <PreviewIllustratedNoBorder />;
+    case 'illustrated-inverted':
+      return <PreviewIllustratedInverted />;
     case 'egg':
       return <PreviewEgg colors={colors} />;
     case 'circle':

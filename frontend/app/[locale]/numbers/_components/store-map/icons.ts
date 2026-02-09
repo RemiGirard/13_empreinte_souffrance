@@ -13,6 +13,8 @@ const MARKER_ICONS = {
   free: '/logo/marker_free_egg.svg',
   cageNoBorder: '/logo/marker_cage_egg_noborder.svg',
   freeNoBorder: '/logo/marker_free_egg_noborder.svg',
+  cageInverted: '/logo/marker_cage_egg_inverted.svg',
+  freeInverted: '/logo/marker_free_egg_inverted.svg',
 } as const;
 
 /* ─── Inline SVG generators ───────────────────────────────────────────── */
@@ -84,6 +86,32 @@ function createNoBorderIllustratedIcon(
   if (cached) return cached;
 
   const src = type === 'cage' ? MARKER_ICONS.cageNoBorder : MARKER_ICONS.freeNoBorder;
+  const styles = `width:${width}px;height:${height}px${opacity < 1 ? `;opacity:${opacity}` : ''}`;
+  const cssClass = outline ? 'egg-marker' : 'egg-marker egg-marker--no-outline';
+  const icon = L.divIcon({
+    html: `<img src="${src}" width="${width}" height="${height}" style="${styles}" alt="" />`,
+    className: cssClass,
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height],
+    popupAnchor: [0, -(height - 2)],
+  });
+
+  iconCache.set(key, icon);
+  return icon;
+}
+
+function createInvertedIllustratedIcon(
+  type: 'cage' | 'free',
+  width: number,
+  height: number,
+  opacity: number,
+  outline: boolean
+): L.DivIcon {
+  const key = `illustrated-inverted|${type}|${width}|${height}|${opacity}|${outline}`;
+  const cached = iconCache.get(key);
+  if (cached) return cached;
+
+  const src = type === 'cage' ? MARKER_ICONS.cageInverted : MARKER_ICONS.freeInverted;
   const styles = `width:${width}px;height:${height}px${opacity < 1 ? `;opacity:${opacity}` : ''}`;
   const cssClass = outline ? 'egg-marker' : 'egg-marker egg-marker--no-outline';
   const icon = L.divIcon({
@@ -201,6 +229,11 @@ export function createIconPairForStyle(
       return {
         cage: createNoBorderIllustratedIcon('cage', marker.width, marker.height, opacity, outline),
         free: createNoBorderIllustratedIcon('free', marker.width, marker.height, opacity, outline),
+      };
+    case 'illustrated-inverted':
+      return {
+        cage: createInvertedIllustratedIcon('cage', marker.width, marker.height, opacity, outline),
+        free: createInvertedIllustratedIcon('free', marker.width, marker.height, opacity, outline),
       };
   }
 }
