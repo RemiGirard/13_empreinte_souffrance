@@ -53,7 +53,7 @@ export default function StoreMap({
   filterPanel: filterPanelProp,
   popup: popupProp,
   /* layout */
-  heightClassName = 'h-[70dvh] md:h-[560px]',
+  heightClassName = 'h-[85dvh] md:h-[560px]',
   className,
   /* render overrides */
   renderPopup,
