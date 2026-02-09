@@ -27,7 +27,13 @@ export type { EnseigneConfig };
 export type CageFilterValue = 'all' | 'cage' | 'noCage';
 
 /** Available marker icon styles. */
-export type MarkerStyle = 'egg' | 'circle' | 'illustrated' | 'illustrated-noborder' | 'illustrated-inverted';
+export type MarkerStyle =
+  | 'egg'
+  | 'circle'
+  | 'illustrated'
+  | 'illustrated-noborder'
+  | 'illustrated-inverted'
+  | 'illustrated-mixed';
 
 /** Snapshot of all active filters + user settings (returned by the hook). */
 export type FilterState = {
