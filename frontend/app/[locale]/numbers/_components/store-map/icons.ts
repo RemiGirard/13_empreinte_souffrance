@@ -11,36 +11,31 @@ import { DEFAULT_COLORS, DEFAULT_MARKER } from './types';
 const MARKER_ICONS = {
   cage: '/logo/marker_cage_egg.svg',
   free: '/logo/marker_free_egg.svg',
+  cageNoBorder: '/logo/marker_cage_egg_noborder.svg',
+  freeNoBorder: '/logo/marker_free_egg_noborder.svg',
 } as const;
 
 /* ─── Inline SVG generators ───────────────────────────────────────────── */
 
-/** Plain egg shape (no illustration). */
-export function eggSvg(
-  fill: string,
-  stroke: string,
-  width: number,
-  height: number,
-): string {
+/** Plain egg shape. When outline=false, no stroke is rendered. */
+export function eggSvg(fill: string, stroke: string, width: number, height: number, outline = true): string {
+  const strokeAttr = outline ? `stroke="${stroke}" stroke-width="1"` : '';
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 20 26">` +
     `<path d="M10 0.5C15.52 0.5 19.5 9.07 19.5 15.77C19.5 22.47 15.52 25.5 10 25.5` +
     `C4.48 25.5 0.5 22.47 0.5 15.77C0.5 9.07 4.48 0.5 10 0.5Z" ` +
-    `fill="${fill}" stroke="${stroke}" stroke-width="1"/>` +
+    `fill="${fill}" ${strokeAttr}/>` +
     `</svg>`
   );
 }
 
-/** Filled circle. */
-function circleSvg(
-  fill: string,
-  stroke: string,
-  size: number,
-): string {
+/** Filled circle. When outline=false, no stroke is rendered. */
+function circleSvg(fill: string, stroke: string, size: number, outline = true): string {
   const r = size / 2 - 1;
+  const strokeAttr = outline ? `stroke="${stroke}" stroke-width="1.5"` : '';
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">` +
-    `<circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>` +
+    `<circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="${fill}" ${strokeAttr}/>` +
     `</svg>`
   );
 }
@@ -56,16 +51,44 @@ function createIllustratedIcon(
   width: number,
   height: number,
   opacity: number,
+  outline: boolean
 ): L.DivIcon {
-  const key = `illustrated|${type}|${width}|${height}|${opacity}`;
+  const key = `illustrated|${type}|${width}|${height}|${opacity}|${outline}`;
   const cached = iconCache.get(key);
   if (cached) return cached;
 
   const src = type === 'cage' ? MARKER_ICONS.cage : MARKER_ICONS.free;
   const styles = `width:${width}px;height:${height}px${opacity < 1 ? `;opacity:${opacity}` : ''}`;
+  const cssClass = outline ? 'egg-marker' : 'egg-marker egg-marker--no-outline';
   const icon = L.divIcon({
     html: `<img src="${src}" width="${width}" height="${height}" style="${styles}" alt="" />`,
-    className: 'egg-marker',
+    className: cssClass,
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height],
+    popupAnchor: [0, -(height - 2)],
+  });
+
+  iconCache.set(key, icon);
+  return icon;
+}
+
+function createNoBorderIllustratedIcon(
+  type: 'cage' | 'free',
+  width: number,
+  height: number,
+  opacity: number,
+  outline: boolean
+): L.DivIcon {
+  const key = `illustrated-noborder|${type}|${width}|${height}|${opacity}|${outline}`;
+  const cached = iconCache.get(key);
+  if (cached) return cached;
+
+  const src = type === 'cage' ? MARKER_ICONS.cageNoBorder : MARKER_ICONS.freeNoBorder;
+  const styles = `width:${width}px;height:${height}px${opacity < 1 ? `;opacity:${opacity}` : ''}`;
+  const cssClass = outline ? 'egg-marker' : 'egg-marker egg-marker--no-outline';
+  const icon = L.divIcon({
+    html: `<img src="${src}" width="${width}" height="${height}" style="${styles}" alt="" />`,
+    className: cssClass,
     iconSize: [width, height],
     iconAnchor: [width / 2, height],
     popupAnchor: [0, -(height - 2)],
@@ -81,19 +104,19 @@ function createPlainEggIcon(
   width: number,
   height: number,
   opacity: number,
+  outline: boolean
 ): L.DivIcon {
-  const key = `egg|${fill}|${stroke}|${width}|${height}|${opacity}`;
+  const key = `egg|${fill}|${stroke}|${width}|${height}|${opacity}|${outline}`;
   const cached = iconCache.get(key);
   if (cached) return cached;
 
-  const svgHtml = eggSvg(fill, stroke, width, height);
-  const html = opacity < 1
-    ? `<span style="opacity:${opacity}">${svgHtml}</span>`
-    : svgHtml;
+  const svgHtml = eggSvg(fill, stroke, width, height, outline);
+  const html = opacity < 1 ? `<span style="opacity:${opacity}">${svgHtml}</span>` : svgHtml;
 
+  const cssClass = outline ? 'egg-marker' : 'egg-marker egg-marker--no-outline';
   const icon = L.divIcon({
     html,
-    className: 'egg-marker',
+    className: cssClass,
     iconSize: [width, height],
     iconAnchor: [width / 2, height],
     popupAnchor: [0, -(height - 2)],
@@ -103,24 +126,18 @@ function createPlainEggIcon(
   return icon;
 }
 
-function createCircleIcon(
-  fill: string,
-  stroke: string,
-  size: number,
-  opacity: number,
-): L.DivIcon {
-  const key = `circle|${fill}|${stroke}|${size}|${opacity}`;
+function createCircleIcon(fill: string, stroke: string, size: number, opacity: number, outline: boolean): L.DivIcon {
+  const key = `circle|${fill}|${stroke}|${size}|${opacity}|${outline}`;
   const cached = iconCache.get(key);
   if (cached) return cached;
 
-  const svgHtml = circleSvg(fill, stroke, size);
-  const html = opacity < 1
-    ? `<span style="opacity:${opacity}">${svgHtml}</span>`
-    : svgHtml;
+  const svgHtml = circleSvg(fill, stroke, size, outline);
+  const html = opacity < 1 ? `<span style="opacity:${opacity}">${svgHtml}</span>` : svgHtml;
 
+  const cssClass = outline ? 'egg-marker' : 'egg-marker egg-marker--no-outline';
   const icon = L.divIcon({
     html,
-    className: 'egg-marker',
+    className: cssClass,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
     popupAnchor: [0, -(size / 2)],
@@ -134,10 +151,10 @@ function createCircleIcon(
 
 /** Shorthand kept for backward compat */
 export function createCageEggIcon(w = DEFAULT_MARKER.width, h = DEFAULT_MARKER.height) {
-  return createIllustratedIcon('cage', w, h, 1);
+  return createIllustratedIcon('cage', w, h, 1, true);
 }
 export function createFreeEggIcon(w = DEFAULT_MARKER.width, h = DEFAULT_MARKER.height) {
-  return createIllustratedIcon('free', w, h, 1);
+  return createIllustratedIcon('free', w, h, 1, true);
 }
 
 /** Legacy plain-egg factory */
@@ -145,46 +162,53 @@ export function createEggIcon(
   fill: string,
   stroke: string,
   width = DEFAULT_MARKER.width,
-  height = DEFAULT_MARKER.height,
+  height = DEFAULT_MARKER.height
 ): L.DivIcon {
-  return createPlainEggIcon(fill, stroke, width, height, 1);
+  return createPlainEggIcon(fill, stroke, width, height, 1, true);
 }
 
 /**
  * Return a cage/free icon pair for the given style.
  * @param opacity  Marker opacity (0.2–1.0). Defaults to 1.
+ * @param outline  Show stroke/outline + drop-shadow. Defaults to true.
  */
 export function createIconPairForStyle(
   style: MarkerStyle,
   colors: MapColorPalette = DEFAULT_COLORS,
   marker: MarkerConfig = DEFAULT_MARKER,
   opacity = 1,
+  outline = true
 ): { cage: L.DivIcon; free: L.DivIcon } {
   switch (style) {
     case 'illustrated':
       return {
-        cage: createIllustratedIcon('cage', marker.width, marker.height, opacity),
-        free: createIllustratedIcon('free', marker.width, marker.height, opacity),
+        cage: createIllustratedIcon('cage', marker.width, marker.height, opacity, outline),
+        free: createIllustratedIcon('free', marker.width, marker.height, opacity, outline),
       };
     case 'egg':
       return {
-        cage: createPlainEggIcon(colors.cage, colors.cageStroke, marker.width, marker.height, opacity),
-        free: createPlainEggIcon(colors.noCage, colors.noCageStroke, marker.width, marker.height, opacity),
+        cage: createPlainEggIcon(colors.cage, colors.cageStroke, marker.width, marker.height, opacity, outline),
+        free: createPlainEggIcon(colors.noCage, colors.noCageStroke, marker.width, marker.height, opacity, outline),
       };
     case 'circle': {
       const size = Math.min(marker.width, marker.height);
       return {
-        cage: createCircleIcon(colors.cage, colors.cageStroke, size, opacity),
-        free: createCircleIcon(colors.noCage, colors.noCageStroke, size, opacity),
+        cage: createCircleIcon(colors.cage, colors.cageStroke, size, opacity, outline),
+        free: createCircleIcon(colors.noCage, colors.noCageStroke, size, opacity, outline),
       };
     }
+    case 'illustrated-noborder':
+      return {
+        cage: createNoBorderIllustratedIcon('cage', marker.width, marker.height, opacity, outline),
+        free: createNoBorderIllustratedIcon('free', marker.width, marker.height, opacity, outline),
+      };
   }
 }
 
 /** Backward-compat alias — defaults to illustrated style. */
 export function createEggIconPair(
   colors: MapColorPalette = DEFAULT_COLORS,
-  marker: MarkerConfig = DEFAULT_MARKER,
+  marker: MarkerConfig = DEFAULT_MARKER
 ): { cage: L.DivIcon; free: L.DivIcon } {
   return createIconPairForStyle('illustrated', colors, marker);
 }

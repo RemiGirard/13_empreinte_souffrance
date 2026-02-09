@@ -30,13 +30,7 @@ import {
 import { createIconPairForStyle } from './icons';
 import { useStoreMapFilters } from './hooks';
 
-import {
-  EggMarker,
-  MapFilterPanel,
-  MapInitializer,
-  MapSettingsPanel,
-  MapStatsBar,
-} from './components';
+import { EggMarker, MapFilterPanel, MapInitializer, MapSettingsPanel, MapStatsBar } from './components';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    StoreMap — highly customisable Leaflet map component
@@ -79,7 +73,7 @@ export default function StoreMap({
   const statsBarCfg: StatsBarConfig = useMemo(() => ({ ...DEFAULT_STATS_BAR, ...statsBarProp }), [statsBarProp]);
   const filterPanelCfg: FilterPanelConfig = useMemo(
     () => ({ ...DEFAULT_FILTER_PANEL, ...filterPanelProp }),
-    [filterPanelProp],
+    [filterPanelProp]
   );
   const popupCfg: PopupConfig = useMemo(() => ({ ...DEFAULT_POPUP, ...popupProp }), [popupProp]);
 
@@ -91,6 +85,7 @@ export default function StoreMap({
     markerStyle,
     markerSize,
     markerOpacity,
+    showOutline,
     filteredStores,
     stats,
     toggleCageFilter,
@@ -98,6 +93,7 @@ export default function StoreMap({
     setMarkerStyle,
     setMarkerSize,
     setMarkerOpacity,
+    setShowOutline,
   } = useStoreMapFilters(storeData, enseigneData);
 
   /* ── Effective marker size (from numeric slider) ──────────────────────── */
@@ -107,14 +103,14 @@ export default function StoreMap({
       width: Math.round(markerSize * MARKER_ASPECT),
       height: markerSize,
     }),
-    [markerSize],
+    [markerSize]
   );
 
-  /* ── Icons (rebuild when style / size / opacity change) ──────────────── */
+  /* ── Icons (rebuild when style / size / opacity / outline change) ─────── */
 
   const icons = useMemo(
-    () => createIconPairForStyle(markerStyle, colors, markerCfg, markerOpacity),
-    [markerStyle, colors, markerCfg, markerOpacity],
+    () => createIconPairForStyle(markerStyle, colors, markerCfg, markerOpacity, showOutline),
+    [markerStyle, colors, markerCfg, markerOpacity, showOutline]
   );
 
   /* ── Enseigne label for stats bar ────────────────────────────────────── */
@@ -130,7 +126,7 @@ export default function StoreMap({
       className={clsx(
         'relative w-full overflow-hidden shadow-lg border border-gray-200/60 rounded-2xl',
         heightClassName,
-        className,
+        className
       )}
     >
       {/* ─── Leaflet Map ─── */}
@@ -148,7 +144,7 @@ export default function StoreMap({
 
         {filteredStores.map((s, i) => (
           <EggMarker
-            key={`${s.category}-${i}-${markerStyle}-${markerSize}-${markerOpacity}`}
+            key={`${s.category}-${i}-${markerStyle}-${markerSize}-${markerOpacity}-${showOutline}`}
             store={s}
             cageIcon={icons.cage}
             freeIcon={icons.free}
@@ -182,6 +178,8 @@ export default function StoreMap({
         onChangeMarkerSize={setMarkerSize}
         markerOpacity={markerOpacity}
         onChangeMarkerOpacity={setMarkerOpacity}
+        showOutline={showOutline}
+        onToggleOutline={setShowOutline}
         storeCount={filteredStores.length}
         colors={colors}
       />

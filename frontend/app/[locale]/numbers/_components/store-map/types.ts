@@ -27,7 +27,7 @@ export type { EnseigneConfig };
 export type CageFilterValue = 'all' | 'cage' | 'noCage';
 
 /** Available marker icon styles. */
-export type MarkerStyle = 'egg' | 'circle' | 'illustrated';
+export type MarkerStyle = 'egg' | 'circle' | 'illustrated' | 'illustrated-noborder';
 
 /** Snapshot of all active filters + user settings (returned by the hook). */
 export type FilterState = {
@@ -38,6 +38,8 @@ export type FilterState = {
   markerSize: number;
   /** Marker opacity 0.2–1. */
   markerOpacity: number;
+  /** Show marker outlines / strokes / drop-shadow. */
+  showOutline: boolean;
 };
 
 /* ─── Color palette ───────────────────────────────────────────────────────── */
@@ -202,6 +204,9 @@ export const DEFAULT_MARKER_SIZE = 28;
 
 /** Default marker opacity (1.0 = fully opaque). */
 export const DEFAULT_MARKER_OPACITY = 1.0;
+
+/** Whether marker outlines / drop-shadow are shown by default. */
+export const DEFAULT_SHOW_OUTLINE = false;
 
 export const DEFAULT_STATS_BAR: StatsBarConfig = {
   visible: false,

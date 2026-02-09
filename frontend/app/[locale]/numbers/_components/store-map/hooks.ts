@@ -1,12 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
-import type {
-  CageFilterValue,
-  MarkerStyle,
-  FilterState,
-  Store,
-  EnseigneConfig,
-} from './types';
-import { DEFAULT_MARKER_SIZE, DEFAULT_MARKER_OPACITY } from './types';
+import type { CageFilterValue, MarkerStyle, FilterState, Store, EnseigneConfig } from './types';
+import { DEFAULT_MARKER_SIZE, DEFAULT_MARKER_OPACITY, DEFAULT_SHOW_OUTLINE } from './types';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    useStoreMapFilters — all filter + settings logic in a single hook
@@ -19,6 +13,7 @@ export type UseStoreMapFiltersReturn = {
   markerStyle: MarkerStyle;
   markerSize: number;
   markerOpacity: number;
+  showOutline: boolean;
   filterState: FilterState;
 
   /* derived data */
@@ -36,6 +31,8 @@ export type UseStoreMapFiltersReturn = {
   setMarkerSize: (size: number) => void;
   // eslint-disable-next-line no-unused-vars
   setMarkerOpacity: (opacity: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  setShowOutline: (show: boolean) => void;
   resetFilters: () => void;
 };
 
@@ -45,7 +42,7 @@ export type UseStoreMapFiltersReturn = {
 export function useStoreMapFilters(
   stores: Store[],
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  enseigneList: EnseigneConfig[],
+  enseigneList: EnseigneConfig[]
 ): UseStoreMapFiltersReturn {
   /* ── filter state ───────────────────────────────────────────────────── */
   const [cageFilter, setCageFilter] = useState<CageFilterValue>('all');
@@ -55,6 +52,7 @@ export function useStoreMapFilters(
   const [markerStyle, setMarkerStyleState] = useState<MarkerStyle>('illustrated');
   const [markerSize, setMarkerSizeState] = useState<number>(DEFAULT_MARKER_SIZE);
   const [markerOpacity, setMarkerOpacityState] = useState<number>(DEFAULT_MARKER_OPACITY);
+  const [showOutline, setShowOutlineState] = useState<boolean>(DEFAULT_SHOW_OUTLINE);
 
   /* ── actions ─────────────────────────────────────────────────────────── */
 
@@ -78,6 +76,10 @@ export function useStoreMapFilters(
     setMarkerOpacityState(opacity);
   }, []);
 
+  const setShowOutline = useCallback((show: boolean) => {
+    setShowOutlineState(show);
+  }, []);
+
   const resetFilters = useCallback(() => {
     setCageFilter('all');
     setSelectedEnseigne(null);
@@ -97,9 +99,7 @@ export function useStoreMapFilters(
   /* ── derived: stats (based on enseigne only, ignoring cage filter) ──── */
 
   const stats = useMemo(() => {
-    const pool = selectedEnseigne
-      ? stores.filter((s) => s.category === selectedEnseigne)
-      : stores;
+    const pool = selectedEnseigne ? stores.filter((s) => s.category === selectedEnseigne) : stores;
     return {
       total: pool.length,
       withCage: pool.filter((s) => s.hasCageEggs).length,
@@ -109,8 +109,8 @@ export function useStoreMapFilters(
   /* ── snapshot ────────────────────────────────────────────────────────── */
 
   const filterState: FilterState = useMemo(
-    () => ({ cageFilter, selectedEnseigne, markerStyle, markerSize, markerOpacity }),
-    [cageFilter, selectedEnseigne, markerStyle, markerSize, markerOpacity],
+    () => ({ cageFilter, selectedEnseigne, markerStyle, markerSize, markerOpacity, showOutline }),
+    [cageFilter, selectedEnseigne, markerStyle, markerSize, markerOpacity, showOutline]
   );
 
   return {
@@ -119,6 +119,7 @@ export function useStoreMapFilters(
     markerStyle,
     markerSize,
     markerOpacity,
+    showOutline,
     filterState,
     filteredStores,
     stats,
@@ -127,6 +128,7 @@ export function useStoreMapFilters(
     setMarkerStyle,
     setMarkerSize,
     setMarkerOpacity,
+    setShowOutline,
     resetFilters,
   };
 }

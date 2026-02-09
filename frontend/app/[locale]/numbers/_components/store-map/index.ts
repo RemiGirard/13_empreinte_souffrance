@@ -34,7 +34,14 @@ export { EggMarker, MapFilterPanel, MapInitializer, MapSettingsPanel, MapPopup, 
 export { useStoreMapFilters } from './hooks';
 
 /* Icon utilities */
-export { createEggIcon, createEggIconPair, createCageEggIcon, createFreeEggIcon, createIconPairForStyle, eggSvg } from './icons';
+export {
+  createEggIcon,
+  createEggIconPair,
+  createCageEggIcon,
+  createFreeEggIcon,
+  createIconPairForStyle,
+  eggSvg,
+} from './icons';
 
 /* Types */
 export type {
@@ -61,6 +68,7 @@ export {
   DEFAULT_MARKER_OPACITY,
   DEFAULT_MARKER_SIZE,
   DEFAULT_POPUP,
+  DEFAULT_SHOW_OUTLINE,
   DEFAULT_STATS_BAR,
   DEFAULT_TILE,
   DEFAULT_VIEW,

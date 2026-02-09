@@ -7,20 +7,23 @@ import clsx from 'clsx';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MapSettingsPanel — closable config popup (top-right gear icon)
-   Sections: marker style, marker size (range), opacity (range), store count
+   Sections: marker style, outline toggle, marker size, opacity, store count
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─── Constants ───────────────────────────────────────────────────────── */
 
 const STYLE_OPTIONS: { id: MarkerStyle; label: string }[] = [
   { id: 'illustrated', label: 'Illustrés' },
-  { id: 'egg',         label: 'Œufs unis' },
-  { id: 'circle',      label: 'Cercles' },
+  { id: 'illustrated-noborder', label: 'Sans contour' },
+  { id: 'egg', label: 'Œufs unis' },
+  { id: 'circle', label: 'Cercles' },
 ];
 
 const ILLUSTRATED_ICONS = {
   cage: '/logo/marker_cage_egg.svg',
   free: '/logo/marker_free_egg.svg',
+  cageNoBorder: '/logo/marker_cage_egg_noborder.svg',
+  freeNoBorder: '/logo/marker_free_egg_noborder.svg',
 } as const;
 
 /* ─── Style previews ──────────────────────────────────────────────────── */
@@ -39,7 +42,9 @@ function PreviewEgg({ colors }: { colors: MapColorPalette }) {
     <svg width="14" height="18" viewBox="0 0 20 26" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M10 0.5C15.52 0.5 19.5 9.07 19.5 15.77C19.5 22.47 15.52 25.5 10 25.5C4.48 25.5 0.5 22.47 0.5 15.77C0.5 9.07 4.48 0.5 10 0.5Z"
-        fill={fill} stroke={stroke} strokeWidth="1"
+        fill={fill}
+        stroke={stroke}
+        strokeWidth="1"
       />
     </svg>
   );
@@ -65,22 +70,32 @@ function PreviewCircle({ colors }: { colors: MapColorPalette }) {
   );
 }
 
+function PreviewIllustratedNoBorder() {
+  return (
+    <span className="inline-flex items-end gap-1">
+      <img src={ILLUSTRATED_ICONS.cageNoBorder} alt="" className="w-[16px] h-[20px]" />
+      <img src={ILLUSTRATED_ICONS.freeNoBorder} alt="" className="w-[16px] h-[20px]" />
+    </span>
+  );
+}
+
 function StylePreview({ style, colors }: { style: MarkerStyle; colors: MapColorPalette }) {
   switch (style) {
-    case 'illustrated': return <PreviewIllustrated />;
-    case 'egg':         return <PreviewEgg colors={colors} />;
-    case 'circle':      return <PreviewCircle colors={colors} />;
+    case 'illustrated':
+      return <PreviewIllustrated />;
+    case 'illustrated-noborder':
+      return <PreviewIllustratedNoBorder />;
+    case 'egg':
+      return <PreviewEgg colors={colors} />;
+    case 'circle':
+      return <PreviewCircle colors={colors} />;
   }
 }
 
 /* ─── Reusable sub-components ─────────────────────────────────────────── */
 
 function SectionLabel({ children }: { children: string }) {
-  return (
-    <p className="text-[9px] uppercase tracking-widest text-gray-400 font-bold px-2.5 pt-2.5 pb-1">
-      {children}
-    </p>
-  );
+  return <p className="text-[9px] uppercase tracking-widest text-gray-400 font-bold px-2.5 pt-2.5 pb-1">{children}</p>;
 }
 
 function Divider() {
@@ -92,14 +107,14 @@ function GearIcon() {
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
       <path
         d="M6.5 1.5L6.8 3.1C6.3 3.3 5.8 3.6 5.4 4L3.8 3.4L2.3 5.9L3.6 7C3.5 7.3 3.5 7.7 3.5 8C3.5 8.3 3.5 8.7 3.6 9L2.3 10.1L3.8 12.6L5.4 12C5.8 12.4 6.3 12.7 6.8 12.9L6.5 14.5H9.5L9.2 12.9C9.7 12.7 10.2 12.4 10.6 12L12.2 12.6L13.7 10.1L12.4 9C12.5 8.7 12.5 8.3 12.5 8C12.5 7.7 12.5 7.3 12.4 7L13.7 5.9L12.2 3.4L10.6 4C10.2 3.6 9.7 3.3 9.2 3.1L9.5 1.5H6.5Z"
-        stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
       />
       <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2" />
     </svg>
   );
 }
-
-/* ─── Store count icon ─────────────────────────────────────────────────── */
 
 function StoreIcon() {
   return (
@@ -127,6 +142,10 @@ type MapSettingsPanelProps = {
   markerOpacity: number;
   // eslint-disable-next-line no-unused-vars
   onChangeMarkerOpacity: (opacity: number) => void;
+  /* outline toggle */
+  showOutline: boolean;
+  // eslint-disable-next-line no-unused-vars
+  onToggleOutline: (show: boolean) => void;
   /* visible store count */
   storeCount: number;
   /* palette */
@@ -140,6 +159,8 @@ export default function MapSettingsPanel({
   onChangeMarkerSize,
   markerOpacity,
   onChangeMarkerOpacity,
+  showOutline,
+  onToggleOutline,
   storeCount,
   colors = DEFAULT_COLORS,
 }: MapSettingsPanelProps) {
@@ -157,7 +178,7 @@ export default function MapSettingsPanel({
           'bg-white/90 backdrop-blur-md shadow-lg border border-white/60',
           'text-gray-500 hover:text-gray-700 hover:shadow-xl',
           'transition-all duration-200 cursor-pointer select-none',
-          open && 'ring-2 ring-gray-300',
+          open && 'ring-2 ring-gray-300'
         )}
       >
         <GearIcon />
@@ -192,15 +213,13 @@ export default function MapSettingsPanel({
                   className={clsx(
                     'flex items-center gap-2 w-full px-2 py-1.5 rounded-lg',
                     'text-left text-[11px] font-medium transition-all duration-150 cursor-pointer select-none',
-                    isActive
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700',
+                    isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                   )}
                 >
                   <span
                     className={clsx(
                       'w-3 h-3 rounded-full border-[1.5px] shrink-0 flex items-center justify-center',
-                      isActive ? 'border-gray-700' : 'border-gray-300',
+                      isActive ? 'border-gray-700' : 'border-gray-300'
                     )}
                   >
                     {isActive && <span className="w-1.5 h-1.5 rounded-full bg-gray-700" />}
@@ -210,6 +229,29 @@ export default function MapSettingsPanel({
                 </button>
               );
             })}
+          </div>
+
+          <Divider />
+
+          {/* ═══ SECTION: Outline toggle ═══════════════════════════════════ */}
+          <div className="px-2.5 py-2 flex items-center justify-between">
+            <span className="text-[11px] font-medium text-gray-600">Contours</span>
+            <button
+              onClick={() => onToggleOutline(!showOutline)}
+              className={clsx(
+                'relative w-8 h-[18px] rounded-full transition-colors duration-200 cursor-pointer',
+                showOutline ? 'bg-gray-800' : 'bg-gray-300'
+              )}
+              role="switch"
+              aria-checked={showOutline}
+            >
+              <span
+                className={clsx(
+                  'absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white shadow-sm transition-transform duration-200',
+                  showOutline ? 'translate-x-[16px]' : 'translate-x-[2px]'
+                )}
+              />
+            </button>
           </div>
 
           <Divider />
