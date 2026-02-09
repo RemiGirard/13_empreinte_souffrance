@@ -154,15 +154,6 @@ function GearIcon() {
   );
 }
 
-function StoreIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-      <path d="M2 6L8 2L14 6V14H2V6Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
-      <rect x="6" y="9" width="4" height="5" rx="0.5" stroke="currentColor" strokeWidth="1" />
-    </svg>
-  );
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
    Main component
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -188,8 +179,6 @@ type MapSettingsPanelProps = {
   zoomScale: number;
   // eslint-disable-next-line no-unused-vars
   onChangeZoomScale: (scale: number) => void;
-  /* visible store count */
-  storeCount: number;
   /* palette */
   colors?: MapColorPalette;
 };
@@ -205,7 +194,6 @@ export default function MapSettingsPanel({
   onToggleOutline,
   zoomScale,
   onChangeZoomScale,
-  storeCount,
   colors = DEFAULT_COLORS,
 }: MapSettingsPanelProps) {
   const [open, setOpen] = useState(false);
@@ -359,16 +347,6 @@ export default function MapSettingsPanel({
                 {zoomScale === 0 ? 'Off' : `${Math.round(zoomScale * 100)}%`}
               </span>
             </div>
-          </div>
-
-          <Divider />
-
-          {/* ═══ SECTION: Store count (read-only) ═════════════════════════ */}
-          <div className="px-2.5 py-2 flex items-center gap-2">
-            <StoreIcon />
-            <span className="text-[11px] font-medium text-gray-600">
-              {storeCount} magasin{storeCount !== 1 ? 's' : ''} visible{storeCount !== 1 ? 's' : ''}
-            </span>
           </div>
         </div>
       )}

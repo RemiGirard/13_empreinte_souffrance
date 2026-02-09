@@ -207,7 +207,6 @@ export default function StoreMap({
         onToggleOutline={setShowOutline}
         zoomScale={zoomScale}
         onChangeZoomScale={setZoomScale}
-        storeCount={filteredStores.length}
         colors={colors}
       />
 
