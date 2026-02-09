@@ -289,7 +289,7 @@ export default function MapSettingsPanel({
               <input
                 type="range"
                 min={10}
-                max={40}
+                max={60}
                 step={1}
                 value={markerSize}
                 onChange={(e) => onChangeMarkerSize(Number(e.target.value))}

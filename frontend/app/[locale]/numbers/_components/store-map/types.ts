@@ -206,7 +206,7 @@ export const DEFAULT_TILE: TileConfig = {
 };
 
 /** Default marker height in px (width auto-computed from aspect ratio). */
-export const DEFAULT_MARKER_SIZE = 28;
+export const DEFAULT_MARKER_SIZE = 36;
 
 /** Default marker opacity (1.0 = fully opaque). */
 export const DEFAULT_MARKER_OPACITY = 1.0;
