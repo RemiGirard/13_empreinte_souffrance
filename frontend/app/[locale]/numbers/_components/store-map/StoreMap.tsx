@@ -113,7 +113,10 @@ export default function StoreMap({
    */
   const zoomCssScale = useMemo(() => {
     if (zoomScale === 0) return 1;
-    return Math.max(0.2, Math.min(4, Math.pow(2, (currentZoom - REF_ZOOM) * zoomScale * 0.5)));
+    // Gentle scaling: each zoom step changes size by ~8% at default (zoomScale=0.5).
+    // At max zoomScale=1, each step ≈ 15%.
+    const factor = Math.pow(2, (currentZoom - REF_ZOOM) * zoomScale * 0.2);
+    return Math.max(0.3, Math.min(2.5, factor));
   }, [currentZoom, zoomScale]);
 
   /* ── Marker size (from numeric slider — independent of zoom) ──────────── */
