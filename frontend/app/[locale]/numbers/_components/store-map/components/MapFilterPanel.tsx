@@ -236,18 +236,25 @@ export default function MapFilterPanel({
           {/* ── Divider ────────────────────────────────────────────────── */}
           {config.showCageFilter && config.showEnseigneFilter && <div className="h-px bg-gray-200/60 mb-1.5" />}
 
-          {/* ── Enseigne logos (2 rows of 4) ─────────────────────────── */}
+          {/* ── Enseigne logo grid ─────────────────────────────────────── */}
           {config.showEnseigneFilter && (
-            <div className="grid grid-cols-4 gap-y-1.5 items-center justify-items-stretch">
-              {enseigneList.map((enseigne) => (
-                <div key={enseigne.id} className="flex items-center justify-center h-[36px] md:h-[42px]">
+            <div className="flex justify-center">
+              <div
+                className="grid items-center justify-items-center"
+                style={{
+                  gridTemplateColumns: `repeat(${config.enseigneGridCols}, minmax(32px, 44px))`,
+                  gap: '6px 8px',
+                }}
+              >
+                {enseigneList.map((enseigne) => (
                   <EnseigneButton
+                    key={enseigne.id}
                     enseigne={enseigne}
                     isSelected={selectedEnseigne === enseigne.id}
                     onClick={() => onToggleEnseigne(enseigne.id)}
                   />
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
