@@ -218,7 +218,7 @@ export const DEFAULT_MARKER_OPACITY = 1.0;
 export const DEFAULT_SHOW_OUTLINE = false;
 
 /** How aggressively markers scale with zoom (0 = off, 1 = max). Default 0.5 = moderate. */
-export const DEFAULT_ZOOM_SCALE = 0.5;
+export const DEFAULT_ZOOM_SCALE = 0;
 
 export const DEFAULT_STATS_BAR: StatsBarConfig = {
   visible: false,
