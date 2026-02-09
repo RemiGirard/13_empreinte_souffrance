@@ -17,6 +17,7 @@ const STYLE_OPTIONS: { id: MarkerStyle; label: string }[] = [
   { id: 'illustrated-noborder', label: 'Sans contour' },
   { id: 'illustrated-inverted', label: 'Inversés' },
   { id: 'illustrated-mixed', label: 'Mixte' },
+  { id: 'illustrated-mixed2', label: 'Mixte 2' },
   { id: 'egg', label: 'Œufs unis' },
   { id: 'circle', label: 'Cercles' },
 ];
@@ -101,6 +102,15 @@ function PreviewIllustratedMixed() {
   );
 }
 
+function PreviewIllustratedMixed2() {
+  return (
+    <span className="inline-flex items-end gap-1">
+      <img src={ILLUSTRATED_ICONS.cage} alt="" className="w-[16px] h-[20px]" />
+      <img src={ILLUSTRATED_ICONS.freeInverted} alt="" className="w-[16px] h-[20px]" />
+    </span>
+  );
+}
+
 function StylePreview({ style, colors }: { style: MarkerStyle; colors: MapColorPalette }) {
   switch (style) {
     case 'illustrated':
@@ -111,6 +121,8 @@ function StylePreview({ style, colors }: { style: MarkerStyle; colors: MapColorP
       return <PreviewIllustratedInverted />;
     case 'illustrated-mixed':
       return <PreviewIllustratedMixed />;
+    case 'illustrated-mixed2':
+      return <PreviewIllustratedMixed2 />;
     case 'egg':
       return <PreviewEgg colors={colors} />;
     case 'circle':

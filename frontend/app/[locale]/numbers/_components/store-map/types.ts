@@ -33,7 +33,8 @@ export type MarkerStyle =
   | 'illustrated'
   | 'illustrated-noborder'
   | 'illustrated-inverted'
-  | 'illustrated-mixed';
+  | 'illustrated-mixed'
+  | 'illustrated-mixed2';
 
 /** Snapshot of all active filters + user settings (returned by the hook). */
 export type FilterState = {
