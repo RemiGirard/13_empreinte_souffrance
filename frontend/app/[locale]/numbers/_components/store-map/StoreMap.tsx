@@ -106,25 +106,24 @@ export default function StoreMap({
 
   const onZoomChange = useCallback((z: number) => setCurrentZoom(z), []);
 
-  /* ── Effective marker size (base × zoom factor) ──────────────────────── */
+  /**
+   * CSS scale factor applied via `--marker-zoom-scale` custom property.
+   * Icons stay at the base size; the visual scaling is done purely in CSS
+   * with a smooth transition — no icon recreation needed.
+   */
+  const zoomCssScale = useMemo(() => {
+    if (zoomScale === 0) return 1;
+    return Math.max(0.2, Math.min(4, Math.pow(2, (currentZoom - REF_ZOOM) * zoomScale * 0.5)));
+  }, [currentZoom, zoomScale]);
 
-  const effectiveSize = useMemo(() => {
-    if (zoomScale === 0) return markerSize;
-    // Each zoom level doubles/halves tile size. We use a fraction of that:
-    // factor = 2^((currentZoom - refZoom) * zoomScale * 0.5)
-    // At zoomScale=1, each zoom step changes size by ~41%.
-    // At zoomScale=0.5, each zoom step changes size by ~19%.
-    const factor = Math.pow(2, (currentZoom - REF_ZOOM) * zoomScale * 0.5);
-    // Clamp to reasonable range
-    return Math.round(Math.max(6, Math.min(120, markerSize * factor)));
-  }, [markerSize, currentZoom, zoomScale]);
+  /* ── Marker size (from numeric slider — independent of zoom) ──────────── */
 
   const markerCfg: MarkerConfig = useMemo(
     () => ({
-      width: Math.round(effectiveSize * MARKER_ASPECT),
-      height: effectiveSize,
+      width: Math.round(markerSize * MARKER_ASPECT),
+      height: markerSize,
     }),
-    [effectiveSize]
+    [markerSize]
   );
 
   /* ── Icons (rebuild when style / size / opacity / outline change) ─────── */
@@ -149,6 +148,7 @@ export default function StoreMap({
         heightClassName,
         className
       )}
+      style={{ '--marker-zoom-scale': zoomCssScale } as React.CSSProperties}
     >
       {/* ─── Leaflet Map ─── */}
       <MapContainer
@@ -166,7 +166,7 @@ export default function StoreMap({
 
         {filteredStores.map((s, i) => (
           <EggMarker
-            key={`${s.category}-${i}-${markerStyle}-${effectiveSize}-${markerOpacity}-${showOutline}`}
+            key={`${s.category}-${i}-${markerStyle}-${markerSize}-${markerOpacity}-${showOutline}`}
             store={s}
             cageIcon={icons.cage}
             freeIcon={icons.free}
