@@ -12,7 +12,6 @@ export type EnseigneConfig = {
   id: string;
   name: string;
   logo: string;
-  /** Brand color used for selected-state border / accent. */
   color: string;
 };
 
