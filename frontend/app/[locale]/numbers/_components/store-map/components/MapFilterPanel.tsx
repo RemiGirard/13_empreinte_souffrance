@@ -86,7 +86,7 @@ function EnseigneButton({
         alt={enseigne.name}
         src={enseigne.logo}
         className={clsx(
-          'w-full h-full object-contain transition-all duration-200',
+          'max-w-[36px] max-h-[32px] md:max-w-[44px] md:max-h-[38px] object-contain transition-all duration-200',
           isSelected
             ? 'brightness-110 saturate-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)]'
             : 'opacity-40 grayscale-[50%] group-hover:opacity-90 group-hover:grayscale-0 group-hover:drop-shadow-[0_1px_3px_rgba(0,0,0,0.15)]'
@@ -246,7 +246,7 @@ export default function MapFilterPanel({
               }}
             >
               {enseigneList.map((enseigne) => (
-                <div key={enseigne.id} className="w-[36px] h-[36px] md:w-[44px] md:h-[44px] mx-auto">
+                <div key={enseigne.id} className="flex items-center justify-center h-[36px] md:h-[44px]">
                   <EnseigneButton
                     enseigne={enseigne}
                     isSelected={selectedEnseigne === enseigne.id}
