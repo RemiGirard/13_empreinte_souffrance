@@ -105,7 +105,7 @@ function PreviewIllustratedMixed() {
 function PreviewIllustratedMixed2() {
   return (
     <span className="inline-flex items-end gap-1">
-      <img src={ILLUSTRATED_ICONS.cage} alt="" className="w-[16px] h-[20px]" />
+      <img src={ILLUSTRATED_ICONS.cageInverted} alt="" className="w-[16px] h-[20px]" />
       <img src={ILLUSTRATED_ICONS.freeInverted} alt="" className="w-[16px] h-[20px]" />
     </span>
   );
@@ -184,6 +184,10 @@ type MapSettingsPanelProps = {
   showOutline: boolean;
   // eslint-disable-next-line no-unused-vars
   onToggleOutline: (show: boolean) => void;
+  /* zoom-dependent sizing */
+  zoomScale: number;
+  // eslint-disable-next-line no-unused-vars
+  onChangeZoomScale: (scale: number) => void;
   /* visible store count */
   storeCount: number;
   /* palette */
@@ -199,6 +203,8 @@ export default function MapSettingsPanel({
   onChangeMarkerOpacity,
   showOutline,
   onToggleOutline,
+  zoomScale,
+  onChangeZoomScale,
   storeCount,
   colors = DEFAULT_COLORS,
 }: MapSettingsPanelProps) {
@@ -330,6 +336,27 @@ export default function MapSettingsPanel({
               />
               <span className="text-[10px] font-mono font-semibold text-gray-500 w-[30px] text-right">
                 {Math.round(markerOpacity * 100)}%
+              </span>
+            </div>
+          </div>
+
+          <Divider />
+
+          {/* ═══ SECTION: Zoom scaling (range slider) ══════════════════════ */}
+          <SectionLabel>Zoom adaptatif</SectionLabel>
+          <div className="px-2.5 pb-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={5}
+                value={Math.round(zoomScale * 100)}
+                onChange={(e) => onChangeZoomScale(Number(e.target.value) / 100)}
+                className="flex-1 h-1 accent-gray-700 cursor-pointer"
+              />
+              <span className="text-[10px] font-mono font-semibold text-gray-500 w-[30px] text-right">
+                {zoomScale === 0 ? 'Off' : `${Math.round(zoomScale * 100)}%`}
               </span>
             </div>
           </div>

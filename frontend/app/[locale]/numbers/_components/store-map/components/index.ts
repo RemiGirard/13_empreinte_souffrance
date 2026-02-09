@@ -4,3 +4,4 @@ export { default as MapInitializer } from './MapInitializer';
 export { default as MapSettingsPanel } from './MapSettingsPanel';
 export { default as MapPopup } from './MapPopup';
 export { default as MapStatsBar } from './MapStatsBar';
+export { default as MapZoomTracker } from './MapZoomTracker';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
@@ -30,7 +30,7 @@ import {
 import { createIconPairForStyle } from './icons';
 import { useStoreMapFilters } from './hooks';
 
-import { EggMarker, MapFilterPanel, MapInitializer, MapSettingsPanel, MapStatsBar } from './components';
+import { EggMarker, MapFilterPanel, MapInitializer, MapSettingsPanel, MapStatsBar, MapZoomTracker } from './components';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    StoreMap — highly customisable Leaflet map component
@@ -86,6 +86,7 @@ export default function StoreMap({
     markerSize,
     markerOpacity,
     showOutline,
+    zoomScale,
     filteredStores,
     stats,
     toggleCageFilter,
@@ -94,16 +95,36 @@ export default function StoreMap({
     setMarkerSize,
     setMarkerOpacity,
     setShowOutline,
+    setZoomScale,
   } = useStoreMapFilters(storeData, enseigneData);
 
-  /* ── Effective marker size (from numeric slider) ──────────────────────── */
+  /* ── Zoom tracking ────────────────────────────────────────────────────── */
+
+  /** Reference zoom level — the size slider value corresponds to this zoom. */
+  const REF_ZOOM = 6;
+  const [currentZoom, setCurrentZoom] = useState(view.desktopZoom);
+
+  const onZoomChange = useCallback((z: number) => setCurrentZoom(z), []);
+
+  /* ── Effective marker size (base × zoom factor) ──────────────────────── */
+
+  const effectiveSize = useMemo(() => {
+    if (zoomScale === 0) return markerSize;
+    // Each zoom level doubles/halves tile size. We use a fraction of that:
+    // factor = 2^((currentZoom - refZoom) * zoomScale * 0.5)
+    // At zoomScale=1, each zoom step changes size by ~41%.
+    // At zoomScale=0.5, each zoom step changes size by ~19%.
+    const factor = Math.pow(2, (currentZoom - REF_ZOOM) * zoomScale * 0.5);
+    // Clamp to reasonable range
+    return Math.round(Math.max(6, Math.min(120, markerSize * factor)));
+  }, [markerSize, currentZoom, zoomScale]);
 
   const markerCfg: MarkerConfig = useMemo(
     () => ({
-      width: Math.round(markerSize * MARKER_ASPECT),
-      height: markerSize,
+      width: Math.round(effectiveSize * MARKER_ASPECT),
+      height: effectiveSize,
     }),
-    [markerSize]
+    [effectiveSize]
   );
 
   /* ── Icons (rebuild when style / size / opacity / outline change) ─────── */
@@ -139,12 +160,13 @@ export default function StoreMap({
         maxZoom={view.maxZoom}
       >
         <MapInitializer view={view} />
+        <MapZoomTracker onZoomChange={onZoomChange} />
 
         <TileLayer key={tile.url} url={tile.url} attribution={tile.attribution} />
 
         {filteredStores.map((s, i) => (
           <EggMarker
-            key={`${s.category}-${i}-${markerStyle}-${markerSize}-${markerOpacity}-${showOutline}`}
+            key={`${s.category}-${i}-${markerStyle}-${effectiveSize}-${markerOpacity}-${showOutline}`}
             store={s}
             cageIcon={icons.cage}
             freeIcon={icons.free}
@@ -180,6 +202,8 @@ export default function StoreMap({
         onChangeMarkerOpacity={setMarkerOpacity}
         showOutline={showOutline}
         onToggleOutline={setShowOutline}
+        zoomScale={zoomScale}
+        onChangeZoomScale={setZoomScale}
         storeCount={filteredStores.length}
         colors={colors}
       />

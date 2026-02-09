@@ -47,6 +47,8 @@ export type FilterState = {
   markerOpacity: number;
   /** Show marker outlines / strokes / drop-shadow. */
   showOutline: boolean;
+  /** How aggressively markers scale with zoom (0 = off, 1 = max). */
+  zoomScale: number;
 };
 
 /* ─── Color palette ───────────────────────────────────────────────────────── */
@@ -214,6 +216,9 @@ export const DEFAULT_MARKER_OPACITY = 1.0;
 
 /** Whether marker outlines / drop-shadow are shown by default. */
 export const DEFAULT_SHOW_OUTLINE = false;
+
+/** How aggressively markers scale with zoom (0 = off, 1 = max). Default 0.5 = moderate. */
+export const DEFAULT_ZOOM_SCALE = 0.5;
 
 export const DEFAULT_STATS_BAR: StatsBarConfig = {
   visible: false,

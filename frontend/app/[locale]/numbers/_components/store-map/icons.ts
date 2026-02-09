@@ -242,7 +242,7 @@ export function createIconPairForStyle(
       };
     case 'illustrated-mixed2':
       return {
-        cage: createIllustratedIcon('cage', marker.width, marker.height, opacity, outline),
+        cage: createInvertedIllustratedIcon('cage', marker.width, marker.height, opacity, outline),
         free: createInvertedIllustratedIcon('free', marker.width, marker.height, opacity, outline),
       };
   }
