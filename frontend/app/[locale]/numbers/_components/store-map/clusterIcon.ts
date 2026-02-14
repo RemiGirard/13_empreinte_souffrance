@@ -1,6 +1,5 @@
 import { divIcon, Point, type Marker } from 'leaflet';
 import type { Store } from './types';
-import { COLORS } from './types';
 
 /**
  * Interface for MarkerCluster (from leaflet.markercluster)
@@ -12,116 +11,110 @@ interface MarkerCluster {
 }
 
 /**
- * Actual cage egg icon from /public/logo/marker_cage_egg.svg
- * Red egg with cage bars detail
+ * Original egg icons from /public/logo/
+ * ViewBox: 60 56 103 129
  */
-const CAGE_EGG_ICON = `
-<svg viewBox="60 56 103 129" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+/**
+ * Cage egg - exact copy from marker_cage_egg.svg
+ */
+const CAGE_EGG_PATHS = `
   <path d="M109.555 64.4268C130.032 64.4268 153.961 97.5763 153.961 132.526C153.961 167.476 127.502 176.307 109.555 176.307C93.4277 176.307 66.9688 161.714 66.9688 132.526C66.9688 108.931 85.2711 64.4268 109.555 64.4268Z" fill="#FF584B"/>
   <path d="M111.499 60C119.588 60 126.57 64.0604 132.13 69.2958C137.724 74.5639 142.506 81.5864 146.378 88.9909C154.059 103.677 159 121.52 159 133.969C159 159.943 137.733 181 111.499 181C85.2662 181 64.0001 159.943 64 133.969C64 121.52 68.941 103.677 76.6216 88.9909C80.4941 81.5863 85.2766 74.5639 90.8705 69.2958C96.4296 64.0605 103.412 60.0001 111.499 60ZM111.499 67.0655C108.911 67.0656 106.38 67.671 103.926 68.7743V86.8933C102.824 85.2216 101.1 82.7526 98.3578 81.0079V72.2021C93.9035 74.9444 88.697 82.4208 86.6504 85.8165C87.896 84.9345 89.3728 84.4433 91.0233 84.4433C94.763 84.4434 96.7982 86.4817 98.479 88.8033C98.5647 88.9216 98.6498 89.0404 98.7338 89.16C98.7904 89.2406 98.8465 89.3217 98.9025 89.4026C98.9668 89.4955 99.0309 89.5888 99.0946 89.6821C99.262 89.9276 99.429 90.1735 99.5939 90.4185C100.846 92.2777 102.07 94.0637 103.924 94.9203C105.331 95.5703 107.101 95.6868 109.523 94.8904C113.427 93.607 116.37 94.2175 118.355 95.847L118.367 95.8563L118.367 95.8568C118.378 95.8652 118.388 95.8739 118.398 95.8824C118.456 95.9307 118.513 95.9803 118.569 96.0303C118.59 96.0491 118.612 96.0678 118.633 96.0869C118.686 96.1351 118.738 96.1844 118.789 96.2342L118.806 96.25C118.82 96.2636 118.834 96.2771 118.848 96.2908C118.904 96.3462 118.959 96.4022 119.014 96.4594C119.025 96.4716 119.037 96.4842 119.048 96.4964C119.171 96.6277 119.289 96.7636 119.403 96.9037C119.411 96.9142 119.419 96.9251 119.428 96.9358L119.461 96.9777C121.856 100.011 122.074 104.952 120.114 108.819C119.357 110.387 118.879 112.072 118.701 113.799C114.383 109.798 109.342 106.722 103.895 104.694C102.106 104.027 100.272 103.474 98.4064 103.038C95.1315 102.274 91.7557 101.871 88.3399 101.855C86.6963 101.877 85.0558 102.016 83.4328 102.272C80.586 103.013 78.6484 104.05 77.3528 104.874C76.4661 107.251 75.6637 109.636 74.9522 111.994C79.2209 110.098 83.7895 108.819 88.3399 108.819C91.741 108.878 95.1092 109.381 98.3578 110.307C98.3962 110.318 98.4347 110.33 98.473 110.341C98.498 110.348 98.5233 110.355 98.5483 110.363C98.6835 110.402 98.8189 110.441 98.9538 110.482C99.0342 110.507 99.1146 110.532 99.195 110.557C99.3444 110.603 99.4935 110.651 99.6425 110.699C99.6667 110.707 99.6913 110.714 99.7156 110.722C99.7475 110.732 99.7794 110.742 99.8111 110.752C100.02 110.821 100.229 110.891 100.436 110.964C100.451 110.969 100.466 110.973 100.481 110.978L100.844 111.107C100.888 111.123 100.932 111.139 100.976 111.155L101.052 111.183L101.118 111.207C101.165 111.224 101.213 111.242 101.261 111.259C101.454 111.331 101.647 111.405 101.84 111.48L101.916 111.511L101.978 111.535C102.151 111.603 102.323 111.673 102.495 111.744C102.541 111.763 102.586 111.782 102.632 111.801C102.813 111.876 102.993 111.953 103.173 112.031L103.217 112.05C103.235 112.057 103.253 112.065 103.27 112.072C103.483 112.166 103.695 112.261 103.907 112.358L103.926 112.367C104.207 112.496 104.486 112.628 104.764 112.764C109.874 115.264 114.358 118.852 117.889 123.271C119.622 125.247 121.485 127.108 123.467 128.842C127.16 132.18 129.641 136.62 130.528 141.483C130.576 141.715 130.562 141.955 130.487 142.179C130.412 142.405 130.279 142.606 130.101 142.764C129.922 142.923 129.705 143.032 129.471 143.082C129.236 143.132 128.992 143.121 128.763 143.049C127.056 142.611 125.337 142.223 123.609 141.884C122.274 141.622 120.934 141.39 119.59 141.187H119.594C115.097 140.51 110.55 140.166 105.992 140.159C105.282 140.159 104.588 140.239 103.91 140.39C101.97 140.821 100.161 141.84 98.4861 143.272C92.8529 148.091 88.7505 157.601 86.3901 165.26C88.5234 166.941 93.9034 170.596 98.3578 171.767V161.143C99.7108 161.377 101.084 161.495 102.462 161.494L102.467 161.494C102.964 161.494 103.45 161.474 103.926 161.438V173.232C106.379 173.693 108.911 173.934 111.499 173.934C113.767 173.934 115.991 173.748 118.156 173.393V150.089C118.299 149.521 118.421 148.966 118.523 148.432L118.864 146.654C120.492 146.901 122.112 147.198 123.724 147.538V172.067C129.112 170.374 134.009 167.592 138.153 163.982V88.8033C134.009 81.6208 129.112 75.4272 123.724 71.5092V93.4264C122.336 91.7214 120.48 90.3092 118.156 89.4765V68.386C115.991 67.5295 113.767 67.0655 111.499 67.0655ZM143.693 158.08C148.723 151.505 151.747 143.343 151.86 134.486L151.864 133.969C151.864 124.913 148.822 112.024 143.693 99.9737V158.08ZM106.612 145.732C109.154 145.732 111.449 145.733 113.673 146.011C112.756 150.791 110.502 155.45 104.546 156.1L104.533 156.101L104.521 156.103C104.414 156.114 104.306 156.125 104.197 156.134L104.189 156.135C104.082 156.143 103.974 156.151 103.865 156.156C103.857 156.157 103.848 156.157 103.839 156.158L103.809 156.16C103.72 156.165 103.63 156.167 103.539 156.171C103.504 156.171 103.468 156.173 103.433 156.174L103.31 156.175L103.267 156.176C103.205 156.177 103.144 156.179 103.082 156.179H103.041C103.008 156.179 102.976 156.178 102.943 156.178C102.85 156.177 102.757 156.176 102.665 156.174C102.59 156.173 102.516 156.17 102.441 156.167C102.357 156.164 102.273 156.161 102.188 156.156C102.13 156.154 102.071 156.152 102.013 156.149C101.866 156.14 101.718 156.129 101.571 156.117L101.546 156.115C101.523 156.113 101.5 156.111 101.477 156.109C101.338 156.097 101.199 156.084 101.061 156.069L101.025 156.065L100.995 156.061C100.84 156.044 100.686 156.025 100.531 156.004C100.515 156.001 100.499 155.998 100.482 155.996L100.48 155.995L100.442 155.99C100.305 155.971 100.167 155.949 100.03 155.926C100.011 155.923 99.9912 155.919 99.9715 155.916C99.1249 155.772 98.2881 155.57 97.4683 155.308C97.938 154.23 98.4437 153.202 98.9783 152.247L98.9947 152.218L99.0083 152.194C99.0929 152.044 99.1776 151.895 99.2637 151.748L99.2757 151.729L99.3068 151.676C99.3875 151.539 99.4688 151.404 99.5508 151.272C99.5601 151.256 99.5698 151.241 99.5792 151.226C99.5921 151.204 99.6047 151.183 99.6179 151.162C99.9243 150.67 100.24 150.204 100.563 149.766C100.569 149.757 100.576 149.748 100.582 149.74L100.597 149.718C100.688 149.596 100.78 149.475 100.873 149.357C100.897 149.326 100.922 149.295 100.946 149.263C101.042 149.143 101.138 149.025 101.234 148.91C101.243 148.899 101.252 148.888 101.261 148.878L101.275 148.86C101.31 148.819 101.345 148.779 101.38 148.738L101.4 148.715L101.462 148.643C101.49 148.612 101.517 148.58 101.545 148.549C101.57 148.521 101.595 148.493 101.621 148.465L101.657 148.426C101.713 148.364 101.768 148.304 101.824 148.245C101.868 148.198 101.912 148.153 101.956 148.108C102.015 148.047 102.074 147.987 102.134 147.929L102.19 147.873C102.209 147.855 102.227 147.838 102.246 147.82C102.307 147.762 102.369 147.703 102.431 147.646C102.469 147.611 102.507 147.577 102.545 147.544C102.609 147.487 102.672 147.431 102.736 147.377C102.77 147.349 102.803 147.321 102.837 147.294C102.909 147.233 102.982 147.174 103.055 147.117C103.081 147.098 103.106 147.078 103.131 147.059L103.164 147.034C103.225 146.988 103.285 146.944 103.346 146.9C103.377 146.879 103.408 146.857 103.439 146.835C103.518 146.78 103.598 146.727 103.678 146.676C103.694 146.666 103.71 146.656 103.726 146.645C103.733 146.64 103.741 146.635 103.749 146.63C103.829 146.58 103.909 146.532 103.989 146.486C104.839 145.999 105.716 145.732 106.612 145.732ZM95.2646 119.135C93.2146 119.135 91.5527 120.78 91.5526 122.81C91.5526 124.84 93.2145 126.485 95.2646 126.485C97.3148 126.485 98.9767 124.84 98.9767 122.81C98.9766 120.78 97.3147 119.135 95.2646 119.135Z" fill="#3C1212"/>
-</svg>
 `;
 
 /**
- * Actual free egg icon from /public/logo/marker_free_egg.svg
- * Green egg with chicken detail
+ * Free egg - exact copy from marker_free_egg.svg
  */
-const FREE_EGG_ICON = `
-<svg viewBox="60 56 103 129" fill="none" xmlns="http://www.w3.org/2000/svg">
+const FREE_EGG_PATHS = `
   <path d="M110.662 63.7346C131.3 63.7346 155.417 97.2934 155.417 132.675C155.417 168.056 128.75 176.997 110.662 176.997C94.4076 176.997 67.7402 162.223 67.7402 132.675C67.7402 108.788 86.1867 63.7346 110.662 63.7346Z" fill="#22C55E"/>
   <path d="M151.677 132.675C151.677 118.624 146.839 102.046 139.032 89.0319C131.103 75.8164 120.891 67.4691 110.662 67.4691C100.551 67.4692 90.788 75.904 83.2837 89.2471C75.9068 102.364 71.4803 118.973 71.4803 132.675C71.4803 148.983 77.6648 158.947 85.3971 164.93C93.2923 171.04 103.156 173.262 110.662 173.262C119.125 173.262 129.449 170.94 137.56 164.788C145.505 158.762 151.677 148.809 151.677 132.675ZM159.157 132.675C159.157 151.01 151.995 163.218 142.085 170.736C132.34 178.127 120.287 180.731 110.662 180.731C101.914 180.731 90.3167 178.187 80.8146 170.834C71.1496 163.355 64 151.157 64 132.675C64 117.613 68.7968 99.7522 76.7618 85.5898C84.5996 71.6538 96.2978 60 110.662 60C124.969 60 137.134 71.3337 145.449 85.1937C153.885 99.2556 159.157 117.148 159.157 132.675Z" fill="#242233"/>
   <path d="M94.1611 102.537C113.836 102.537 124.111 116.894 126.555 119.771C128.998 122.648 133.637 125.098 135.998 130.424C138.359 135.758 139.519 138.75 138.326 139.958C137.133 141.165 131.597 138.461 123.298 137.697C114.998 136.933 110.112 135.667 105.555 139.891C100.998 144.116 96.1929 152.656 94.1611 158.491C92.1293 164.326 89.7686 172.784 89.7686 172.784C89.7005 172.735 74.2141 161.669 70.4795 145.218C66.7434 128.796 69.3968 119.003 69.418 118.926C69.418 118.926 74.4851 102.537 94.1611 102.537ZM113.492 143.237C119.877 142.689 120.95 143.541 120.961 143.55C120.955 143.613 120.117 152.226 114.355 153.905C108.573 155.59 103.818 153.799 103.818 153.799V153.79C103.835 153.74 107.092 143.786 113.492 143.237ZM101.408 113.674C99.1464 113.674 97.3205 115.572 97.3203 117.914C97.3203 120.256 99.1545 122.155 101.408 122.155C103.67 122.155 105.497 120.256 105.497 117.914C105.497 115.572 103.67 113.674 101.408 113.674ZM84.3799 84.1922C88.0075 82.8772 91.1507 75.1597 98.1592 75.7186C105.167 76.2778 105.406 84.7592 110.638 87.2166C115.869 89.6737 118.453 83.8142 125.346 87.7674C130.273 90.595 129.269 99.1344 127.756 102.537C126.242 105.948 126.267 108.027 126.267 108.027C126.267 108.027 112.036 95.2055 96.9492 94.7781C81.9119 94.3523 72.6525 104.207 72.5928 104.27C73.9831 98.7305 79.5439 85.1942 79.5439 85.1942C79.5665 85.1998 80.7866 85.4947 84.3799 84.1922Z" fill="#242233"/>
-</svg>
 `;
+
+// ViewBox constants (from the original SVG files)
+const VIEWBOX_X = 60;
+const VIEWBOX_Y = 56;
+const VIEWBOX_WIDTH = 103;
+const VIEWBOX_HEIGHT = 129;
+
+// Center of the egg in viewBox coordinates
+const EGG_CENTER_X = VIEWBOX_X + VIEWBOX_WIDTH / 2; // 111.5
+const EGG_CENTER_Y = VIEWBOX_Y + VIEWBOX_HEIGHT / 2; // 120.5
+
+// Counter for unique mask IDs
+let maskIdCounter = 0;
 
 /**
  * Creates an egg-shaped camembert cluster by superposing both logos
- * and masking the top one to show the proportion
- *
- * Approach:
- * 1. Place free egg logo at the bottom (full)
- * 2. Place cage egg logo on top
- * 3. Mask the cage egg logo with a pie-slice shaped mask
- * 4. Result: Egg-shaped camembert showing both logos
+ * and masking the cage egg with a pie slice
  */
 function createEggCamembertCluster(size: number, cageCount: number, noCageCount: number): string {
   const total = cageCount + noCageCount;
   if (total === 0) return '';
 
-  // Calculate logo scale to fit nicely in the cluster
-  const logoScale = size / 129; // 129 is the original logo height
-  const logoWidth = 103 * logoScale; // Original logo width
-  const logoHeight = 129 * logoScale;
-
-  // Center the logo
-  const offsetX = (size - logoWidth) / 2;
-  const offsetY = (size - logoHeight) / 2;
+  const uniqueId = ++maskIdCounter;
 
   // If all one type, just show that logo
   if (cageCount === 0) {
     return `
-      <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-        <g transform="translate(${offsetX}, ${offsetY}) scale(${logoScale})">
-          ${FREE_EGG_ICON}
-        </g>
+      <svg width="${size}" height="${size}" viewBox="${VIEWBOX_X} ${VIEWBOX_Y} ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+        ${FREE_EGG_PATHS}
       </svg>
     `;
   }
 
   if (noCageCount === 0) {
     return `
-      <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-        <g transform="translate(${offsetX}, ${offsetY}) scale(${logoScale})">
-          ${CAGE_EGG_ICON}
-        </g>
+      <svg width="${size}" height="${size}" viewBox="${VIEWBOX_X} ${VIEWBOX_Y} ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+        ${CAGE_EGG_PATHS}
       </svg>
     `;
   }
 
   // Mixed: Create egg-shaped camembert
-  const cagePercentage = cageCount / total;
-  const cageAngle = cagePercentage * 360;
+  // Green/free starts from top center and progresses clockwise
+  const freePercentage = noCageCount / total;
+  const freeAngle = freePercentage * 360;
 
-  // Center point of the egg shape (approximately)
-  const centerX = size / 2;
-  const centerY = size / 2;
-  const radius = size / 2;
+  // Large radius to ensure the pie slice extends beyond the egg
+  const maskRadius = 150;
 
   // Start from top (12 o'clock) and go clockwise
   const startAngle = -90;
-  const endAngle = startAngle + cageAngle;
+  const endAngle = startAngle + freeAngle;
 
   const startRad = (startAngle * Math.PI) / 180;
   const endRad = (endAngle * Math.PI) / 180;
 
-  const x1 = centerX + radius * Math.cos(startRad);
-  const y1 = centerY + radius * Math.sin(startRad);
-  const x2 = centerX + radius * Math.cos(endRad);
-  const y2 = centerY + radius * Math.sin(endRad);
+  const x1 = EGG_CENTER_X + maskRadius * Math.cos(startRad);
+  const y1 = EGG_CENTER_Y + maskRadius * Math.sin(startRad);
+  const x2 = EGG_CENTER_X + maskRadius * Math.cos(endRad);
+  const y2 = EGG_CENTER_Y + maskRadius * Math.sin(endRad);
 
-  const largeArcFlag = cageAngle > 180 ? 1 : 0;
+  const largeArcFlag = freeAngle > 180 ? 1 : 0;
+
+  // Pie slice path in viewBox coordinates
+  const pieSlicePath = `M ${EGG_CENTER_X},${EGG_CENTER_Y} L ${x1},${y1} A ${maskRadius},${maskRadius} 0 ${largeArcFlag},1 ${x2},${y2} Z`;
 
   return `
-    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+    <svg width="${size}" height="${size}" viewBox="${VIEWBOX_X} ${VIEWBOX_Y} ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <!-- Mask for the cage egg (pie slice) -->
-        <mask id="cage-mask-${size}">
-          <!-- White = visible, Black = hidden -->
-          <path d="M ${centerX},${centerY} L ${x1},${y1} A ${radius},${radius} 0 ${largeArcFlag},1 ${x2},${y2} Z" 
-            fill="white"/>
+        <mask id="free-mask-${uniqueId}">
+          <!-- Black = hide, White = show -->
+          <rect x="${VIEWBOX_X - 50}" y="${VIEWBOX_Y - 50}" width="${VIEWBOX_WIDTH + 100}" height="${VIEWBOX_HEIGHT + 100}" fill="black"/>
+          <path d="${pieSlicePath}" fill="white"/>
         </mask>
       </defs>
       
-      <!-- Layer 1: Free egg logo (background, always full) -->
-      <g transform="translate(${offsetX}, ${offsetY}) scale(${logoScale})">
-        ${FREE_EGG_ICON}
+      <!-- Layer 1: Cage egg (background, full) -->
+      <g>
+        ${CAGE_EGG_PATHS}
       </g>
       
-      <!-- Layer 2: Cage egg logo (foreground, masked to show only a slice) -->
-      <g mask="url(#cage-mask-${size})">
-        <g transform="translate(${offsetX}, ${offsetY}) scale(${logoScale})">
-          ${CAGE_EGG_ICON}
-        </g>
+      <!-- Layer 2: Free egg (foreground, masked to pie slice - starts from top, clockwise) -->
+      <g mask="url(#free-mask-${uniqueId})">
+        ${FREE_EGG_PATHS}
       </g>
     </svg>
   `;
@@ -149,27 +142,32 @@ export function createClusterCustomIcon(cluster: MarkerCluster) {
   });
 
   // Calculate size based on cluster count
+  // Font sizes are smaller for a more discreet look
   let size: number;
   let fontSize: number;
 
   if (count < 10) {
     size = 50;
-    fontSize = 14;
+    fontSize = 11;
   } else if (count < 50) {
     size = 60;
-    fontSize = 16;
+    fontSize = 12;
   } else if (count < 100) {
     size = 70;
-    fontSize = 18;
+    fontSize = 13;
   } else {
     size = 80;
-    fontSize = 20;
+    fontSize = 14;
   }
 
   // Generate egg-shaped camembert
   const clusterSVG = createEggCamembertCluster(size, cageCount, noCageCount);
 
-  // Create the HTML with egg camembert and count overlay
+  // Badge size scales with cluster size
+  const badgeSize = Math.round(size * 0.38);
+  const badgeFontSize = Math.round(fontSize * 0.95);
+
+  // Create the HTML with egg camembert and count badge in corner
   const html = `
     <div class="custom-cluster-icon" style="
       width: ${size}px;
@@ -188,23 +186,24 @@ export function createClusterCustomIcon(cluster: MarkerCluster) {
         ${clusterSVG}
       </div>
       
-      <!-- Count overlay -->
+      <!-- Count badge (bottom-right corner, discreet) -->
       <div style="
-        width: 100%;
-        height: 100%;
         position: absolute;
-        top: 0;
-        left: 0;
+        bottom: -2px;
+        right: -2px;
+        min-width: ${badgeSize}px;
+        height: ${badgeSize}px;
+        padding: 0 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: ${fontSize}px;
-        text-shadow: 
-          0 0 4px rgba(0,0,0,1),
-          0 0 8px rgba(0,0,0,0.8),
-          2px 2px 4px rgba(0,0,0,1);
+        background: rgba(36, 34, 51, 0.85);
+        border-radius: ${badgeSize / 2}px;
+        color: rgba(255,255,255,0.95);
+        font-weight: 500;
+        font-size: ${badgeFontSize}px;
+        line-height: 1;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         pointer-events: none;
       ">
         ${count}

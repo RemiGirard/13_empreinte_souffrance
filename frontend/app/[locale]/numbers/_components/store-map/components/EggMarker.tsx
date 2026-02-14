@@ -1,8 +1,8 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useRef, useLayoutEffect } from 'react';
 import { Marker, Popup } from 'react-leaflet';
-import type { DivIcon } from 'leaflet';
+import type { DivIcon, Marker as LeafletMarker } from 'leaflet';
 import type { MapColors, Store } from '../types';
 import { COLORS } from '../types';
 import MapPopup from './MapPopup';
@@ -15,13 +15,29 @@ type EggMarkerProps = {
 };
 
 export default memo(function EggMarker({ store, cageIcon, freeIcon, colors = COLORS }: EggMarkerProps) {
+  const markerRef = useRef<LeafletMarker>(null);
+
+  // Use useLayoutEffect to attach store data before paint
+  // This runs synchronously after DOM mutations but before paint
+  useLayoutEffect(() => {
+    if (markerRef.current) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (markerRef.current.options as any).store = store;
+    }
+  }, [store]);
+
   return (
     <Marker
+      ref={markerRef}
       position={store.coords}
       icon={store.hasCageEggs ? cageIcon : freeIcon}
-      // Pass store data to marker options so cluster can access it
-      // @ts-ignore - extending Marker options with custom data
-      store={store}
+      // Pass store in eventHandlers context as backup
+      eventHandlers={{
+        add: (e) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (e.target.options as any).store = store;
+        },
+      }}
     >
       <Popup>
         <MapPopup store={store} colors={colors} />

@@ -1,9 +1,8 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import type { LatLngBounds } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './styles.css';
 import clsx from 'clsx';
@@ -68,22 +67,11 @@ export default function StoreMap({
   const [currentZoom, setCurrentZoom] = useState(5.5);
   const onZoomChange = useCallback((z: number) => setCurrentZoom(z), []);
 
-  /* ── Bounds-based culling — only render markers visible on screen ───── */
-  const boundsRef = useRef<LatLngBounds | null>(null);
-  const [boundsVersion, setBoundsVersion] = useState(0);
-  const onBoundsChange = useCallback((b: LatLngBounds) => {
-    boundsRef.current = b;
-    setBoundsVersion((v) => v + 1);
-  }, []);
-
-  const visibleStores = useMemo(() => {
-    const bounds = boundsRef.current;
-    if (!bounds) return filteredStores;
-    // Pad bounds ~10% so markers near the edge don't pop in/out abruptly
-    const padded = bounds.pad(0.1);
-    return filteredStores.filter((s) => padded.contains(s.coords));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredStores, boundsVersion]);
+  /*
+   * NOTE: Bounds-based culling (visibleStores) was removed for cluster stability.
+   * Using filteredStores ensures clusters don't recalculate when panning.
+   * See STABILITY_FIX.md for details.
+   */
 
   /*
    * CSS scale factor applied via `--marker-zoom-scale` custom property.
@@ -121,7 +109,7 @@ export default function StoreMap({
         maxZoom={18}
       >
         <MapInitializer />
-        <MapZoomTracker onZoomChange={onZoomChange} onBoundsChange={onBoundsChange} />
+        <MapZoomTracker onZoomChange={onZoomChange} />
 
         <TileLayer
           url="https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
