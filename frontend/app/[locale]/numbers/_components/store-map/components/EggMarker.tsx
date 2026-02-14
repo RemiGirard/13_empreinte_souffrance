@@ -16,7 +16,13 @@ type EggMarkerProps = {
 
 export default memo(function EggMarker({ store, cageIcon, freeIcon, colors = COLORS }: EggMarkerProps) {
   return (
-    <Marker position={store.coords} icon={store.hasCageEggs ? cageIcon : freeIcon}>
+    <Marker
+      position={store.coords}
+      icon={store.hasCageEggs ? cageIcon : freeIcon}
+      // Pass store data to marker options so cluster can access it
+      // @ts-ignore - extending Marker options with custom data
+      store={store}
+    >
       <Popup>
         <MapPopup store={store} colors={colors} />
       </Popup>

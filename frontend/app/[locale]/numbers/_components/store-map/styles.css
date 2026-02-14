@@ -1,0 +1,50 @@
+/* Cluster icon styles */
+.custom-cluster-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-cluster-icon {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.custom-cluster-icon:hover {
+  transform: scale(1.15);
+  filter: brightness(1.1) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  z-index: 1000 !important;
+}
+
+/* Animation when cluster splits */
+.leaflet-cluster-anim .leaflet-marker-icon,
+.leaflet-cluster-anim .leaflet-marker-shadow {
+  transition:
+    transform 0.3s ease-out,
+    opacity 0.3s ease-in;
+}
+
+/* Spiderfy lines (when cluster expands on click) */
+.leaflet-cluster-spider-leg {
+  stroke: #666;
+  stroke-width: 1.5;
+  stroke-opacity: 0.5;
+}
+
+/* Ensure clusters are above markers but below popups */
+.marker-cluster {
+  z-index: 600 !important;
+}
+
+/* Improve cluster visibility */
+.custom-cluster-icon {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  user-select: none;
+}
+
+/* Ensure SVG pie charts render crisply */
+.custom-cluster-icon svg {
+  shape-rendering: geometricPrecision;
+  display: block;
+}

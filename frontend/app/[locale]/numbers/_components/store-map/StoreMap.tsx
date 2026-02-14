@@ -2,8 +2,10 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import type { LatLngBounds } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import './styles.css';
 import clsx from 'clsx';
 
 import { enseignes as defaultEnseignes, store as defaultStores } from '../../_data/store-data';
@@ -12,6 +14,8 @@ import { COLORS } from './types';
 import { createIconPairForStyle } from './icons';
 import { useStoreMapFilters } from './hooks';
 import { EggMarker, MapFilterPanel, MapInitializer, MapZoomTracker } from './components';
+import { createClusterCustomIcon } from './clusterIcon';
+import { MAX_CLUSTER_RADIUS, DISABLE_CLUSTERING_AT_ZOOM } from './clusterConfig';
 
 type StoreMapProps = {
   stores?: Store[];
@@ -124,14 +128,27 @@ export default function StoreMap({
           attribution="&copy; OpenStreetMap France"
         />
 
-        {visibleStores.map((s, i) => (
-          <EggMarker
-            key={`${s.category}-${i}-${markerStyle}-${markerSize}-${outlineMode}-${strokeWidth}`}
-            store={s}
-            cageIcon={icons.cage}
-            freeIcon={icons.free}
-          />
-        ))}
+        <MarkerClusterGroup
+          chunkedLoading
+          iconCreateFunction={createClusterCustomIcon}
+          maxClusterRadius={MAX_CLUSTER_RADIUS}
+          disableClusteringAtZoom={DISABLE_CLUSTERING_AT_ZOOM}
+          spiderfyOnMaxZoom={true}
+          showCoverageOnHover={false}
+          zoomToBoundsOnClick={true}
+          animate={true}
+          animateAddingMarkers={false}
+          removeOutsideVisibleBounds={false}
+        >
+          {filteredStores.map((s, i) => (
+            <EggMarker
+              key={`${s.category}-${i}-${markerStyle}-${markerSize}-${outlineMode}-${strokeWidth}`}
+              store={s}
+              cageIcon={icons.cage}
+              freeIcon={icons.free}
+            />
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
 
       <MapFilterPanel
