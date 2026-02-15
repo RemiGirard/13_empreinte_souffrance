@@ -15,7 +15,27 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Default: prevent iframe embedding for all routes
+        // Cache static assets (images, fonts, icons) for 1 year
+        source: '/:path(.+\\.(?:ico|png|jpg|jpeg|svg|webp|avif|gif|woff|woff2|ttf|eot)$)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Cache PDF and other downloadable files for 1 week
+        source: '/:path(.+\\.pdf$)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=604800, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        // Default: prevent iframe embedding for all routes + page caching
         source: '/:path*',
         headers: [
           {
@@ -25,6 +45,14 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: "frame-ancestors 'self'",
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
           },
         ],
       },
