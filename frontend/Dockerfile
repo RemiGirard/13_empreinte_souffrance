@@ -13,7 +13,7 @@ WORKDIR /app
 # Copy lockfiles and package manager configs
 COPY package.json package-lock.json ./
 
-# Install dependencies using pnpm
+# Install dependencies
 RUN npm install --frozen-lockfile
 
 # Rebuild the source code only when needed
@@ -36,7 +36,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
-# Production image, copy all the files and run next
+# Production image, copy only standalone output
 FROM base AS runner
 
 # Install wget for healthcheck
@@ -53,12 +53,16 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy built assets and public files with correct ownership
-COPY --from=builder --chown=nextjs:nodejs /app .
+# Copy standalone server (includes minimal node_modules)
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+# Copy static assets (not included in standalone output)
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy public assets
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start your app (adjust if using standalone output)
-CMD ["npm", "start"]
+# Standalone output produces a self-contained server.js
+CMD ["node", "server.js"]
