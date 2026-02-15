@@ -75,9 +75,8 @@ export const metadata: Metadata = {
     site: '@anima_asso',
   },
   icons: {
-    icon: '/favicon/favicon.ico',
-    shortcut: '/favicon/favicon.ico',
-    apple: '/favicon/apple-touch-icon.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
   },
 };
 
