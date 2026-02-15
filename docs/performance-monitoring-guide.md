@@ -355,7 +355,75 @@ volumes:
 
 ---
 
-## 5. Recommended Stack (Minimal)
+## 5. Caching Headers (Already Implemented)
+
+Caching headers are configured in `frontend/next.config.js` under `async headers()`. Here is what is in place and why.
+
+### Static assets — 1 year, immutable
+
+**Applies to:** `.png`, `.jpg`, `.jpeg`, `.svg`, `.webp`, `.avif`, `.gif`, `.ico`, `.woff`, `.woff2`, `.ttf`, `.eot`
+
+```
+Cache-Control: public, max-age=31536000, immutable
+```
+
+| Directive | Meaning |
+|---|---|
+| `public` | Both browsers and CDNs/proxies can cache the response |
+| `max-age=31536000` | Keep in cache for 365 days (standard max convention) |
+| `immutable` | Don't even try to revalidate — the content will never change at this URL |
+
+**Why it's safe:** Next.js hashed assets (under `/_next/static/`) get a new URL on every build automatically. For files in `public/`, images and fonts rarely change. If one does change, rename the file or add a query string to bust the cache.
+
+**Before this change:** Every repeat visitor re-downloaded every image from the server. With 18 MB of images, that's a huge waste of bandwidth under load.
+
+### PDFs — 1 week with background revalidation
+
+**Applies to:** `.pdf` files (e.g. the press kit)
+
+```
+Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+```
+
+| Directive | Meaning |
+|---|---|
+| `max-age=604800` | Fresh for 7 days |
+| `stale-while-revalidate=86400` | After 7 days, serve the stale version instantly to the user while fetching a fresh copy in the background (for 1 extra day) |
+
+**Why shorter than images:** PDFs like the press kit may be updated occasionally, so a 1-week TTL balances caching with freshness.
+
+### Security headers (added alongside caching)
+
+These are set on all routes (`/:path*`):
+
+| Header | Value | Purpose |
+|---|---|---|
+| `X-Content-Type-Options` | `nosniff` | Prevents browsers from MIME-sniffing a response, blocking some XSS vectors |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Only sends the origin (not full URL path) when navigating to external sites, protecting user privacy |
+
+These complement the existing `X-Frame-Options: SAMEORIGIN` and `Content-Security-Policy: frame-ancestors 'self'` headers.
+
+### How to verify after deployment
+
+```bash
+# Check static asset caching
+curl -sI https://lheuredescomptes.org/og-image.png | grep -i cache-control
+# Expected: Cache-Control: public, max-age=31536000, immutable
+
+# Check security headers
+curl -sI https://lheuredescomptes.org/ | grep -iE 'x-content-type|referrer-policy|x-frame'
+# Expected: X-Content-Type-Options: nosniff
+#           Referrer-Policy: strict-origin-when-cross-origin
+#           X-Frame-Options: SAMEORIGIN
+```
+
+### Future improvement: CDN
+
+These caching headers are designed to work with or without a CDN. When a CDN (e.g. Cloudflare free tier) is eventually added in front of the app, it will automatically respect these `Cache-Control` headers and serve cached assets from edge nodes worldwide — offloading 80%+ of static traffic from the origin server.
+
+---
+
+## 6. Recommended Stack (Minimal)
 
 For your single-server Docker Swarm, the most practical combination is:
 
