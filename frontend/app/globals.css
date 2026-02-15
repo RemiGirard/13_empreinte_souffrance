@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 
 /** Themes variables Tailwind **/
@@ -57,9 +56,7 @@ body {
 /** -------------------------typography------------------------- **/
 
 h1 {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 50px;
   font-style: normal;
@@ -68,9 +65,7 @@ h1 {
 }
 
 h2 {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 50px;
   font-style: normal;
@@ -79,9 +74,7 @@ h2 {
 }
 
 h3 {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 36px;
   font-style: normal;
@@ -90,9 +83,7 @@ h3 {
 }
 
 h4 {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 26px;
   font-style: normal;
@@ -101,9 +92,7 @@ h4 {
 }
 
 h5 {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 17px;
   font-style: normal;
@@ -116,17 +105,13 @@ div,
 a,
 p,
 .body {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   line-height: auto;
   font-style: normal;
 }
 
 .numbers {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 50px;
   font-style: normal;
@@ -135,18 +120,14 @@ p,
 }
 
 .lead {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 700;
   line-height: 24px;
   font-style: normal;
 }
 
 .CTA {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: normal;
   font-style: normal;
@@ -155,9 +136,7 @@ p,
 }
 
 .caption {
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 500;
   line-height: 18px;
   font-style: normal;
@@ -242,9 +221,7 @@ h5 {
   text-align: center;
   justify-content: center;
   align-items: center;
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 100%;
   font-style: normal;
@@ -271,9 +248,7 @@ h5 {
   text-align: center;
   justify-content: center;
   align-items: center;
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 100%;
   font-style: normal;
@@ -300,9 +275,7 @@ h5 {
   text-align: center;
   justify-content: center;
   align-items: center;
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 100%;
   font-style: normal;
@@ -329,9 +302,7 @@ h5 {
   text-align: center;
   justify-content: center;
   align-items: center;
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 100%;
   font-style: normal;
@@ -358,9 +329,7 @@ h5 {
   text-align: center;
   justify-content: center;
   align-items: center;
-  font-family:
-    Albert Sans,
-    sans-serif;
+  font-family: var(--font-albert-sans), sans-serif;
   font-weight: 900;
   line-height: 100%;
   font-style: normal;
@@ -390,9 +359,7 @@ h5 {
 .leaflet-popup-content {
   margin: 0 !important;
   padding: 10px 12px !important;
-  font-family:
-    Albert Sans,
-    sans-serif !important;
+  font-family: var(--font-albert-sans), sans-serif !important;
   font-size: 12px !important;
   line-height: 1.4 !important;
 }
