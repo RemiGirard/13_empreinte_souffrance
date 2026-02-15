@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     title: "Les chiffres - L'heure des comptes",
     description:
       "Découvrez les chiffres clés de l'enquête sur les œufs de poules en cage : engagements des supermarchés, résultats de terrain et statistiques détaillées.",
-    images: ['/og-numbers.png'],
+    images: ['/og-image.png'],
   },
   twitter: {
     title: "Les chiffres - L'heure des comptes",
     description:
       "Découvrez les chiffres clés de l'enquête sur les œufs de poules en cage : engagements des supermarchés, résultats de terrain et statistiques détaillées.",
-    images: ['/og-numbers.png'],
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: '/numbers',

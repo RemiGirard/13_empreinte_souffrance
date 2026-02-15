@@ -12,12 +12,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "À propos - L'heure des comptes",
     description: "Découvrez Anima et Data For Good, les associations à l'origine de L'heure des comptes.",
-    images: ['/og-about.png'],
+    images: ['/og-image.png'],
   },
   twitter: {
     title: "À propos - L'heure des comptes",
     description: "Découvrez Anima et Data For Good, les associations à l'origine de L'heure des comptes.",
-    images: ['/og-about.png'],
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: '/about',

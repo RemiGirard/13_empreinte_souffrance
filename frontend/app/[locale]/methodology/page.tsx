@@ -12,12 +12,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "La vie d'une poule - L'heure des comptes",
     description: "Découvrez la méthodologie qui qualifie scientifiquement la vie d'une poule en cage",
-    images: ['/og-methodology.png'],
+    images: ['/og-image.png'],
   },
   twitter: {
     title: "La vie d'une poule - L'heure des comptes",
     description: "Découvrez la méthodologie qui qualifie scientifiquement la vie d'une poule en cage",
-    images: ['/og-methodology.png'],
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: '/methodology',
