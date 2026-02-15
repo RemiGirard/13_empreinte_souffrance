@@ -1,4 +1,5 @@
 import { getI18n } from '@/locales/server';
+import Image from 'next/image';
 import Link from 'next/link';
 import LogoWelfare from '../_components/logo-walfare-footprint';
 
@@ -27,7 +28,7 @@ export default async function Footer() {
           {/* Anima */}
           <div className="flex flex-col">
             <div>
-              <img src="/anima-logo.svg" alt={t('footer.anima_logo_alt')} className="w-[120px] h-[28px] mb-4" />
+              <Image src="/anima-logo.svg" alt={t('footer.anima_logo_alt')} className="mb-4" width={120} height={28} />
               <ul className="space-y-3 text-sm">
                 <li>
                   <a className={footerLinkClasses} target="_blank" href="https://animafrance.org/">
@@ -62,7 +63,7 @@ export default async function Footer() {
           <div className="flex flex-col">
             <div>
               <div className="flex items-center gap-4 mb-4">
-                <img src="/dataforgood.svg" alt={t('footer.dfg_logo_alt')} className="w-48 rounded-full" />
+                <Image src="/dataforgood.svg" alt={t('footer.dfg_logo_alt')} className="rounded-full" width={192} height={48} />
                 <span className="text-lg font-extrabold text-brown"></span>
               </div>
               <ul className="space-y-3 text-sm">

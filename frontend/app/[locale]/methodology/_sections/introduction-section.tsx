@@ -1,4 +1,5 @@
 import { getI18n } from '@/locales/server';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default async function IntroductionSection() {
@@ -10,7 +11,7 @@ export default async function IntroductionSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 ">
           <article className="flex flex-col gap-3">
             <h2>{t('MethodologyPage.introductionSection.title')}</h2>
-        <img src="/welfare-footprint-logo.svg " className="w-[200px] lg:w-[350px] mt-3 mb-6" alt="welfare footprint institute logo" />
+        <Image src="/welfare-footprint-logo.svg" className="mt-3 mb-6" alt="welfare footprint institute logo" width={350} height={80} />
             <p>{t('MethodologyPage.introductionSection.paragraph1')}</p>
             <p>{t('MethodologyPage.introductionSection.paragraph2')}</p>
             <Link
@@ -49,7 +50,7 @@ interface ScientistProps {
 const Scientist = async ({ imgUrl, name, text }: ScientistProps) => {
   return (
     <div className="flex flex-col items-center">
-      <img src={imgUrl} alt="Scientist" className="w-55 rounded-full h-auto object-contain" />
+      <Image src={imgUrl} alt="Scientist" className="rounded-full object-contain" width={220} height={220} />
       <h3 className="text-center my-5">{name}</h3>
       <p className="font-medium">{text}</p>
     </div>
