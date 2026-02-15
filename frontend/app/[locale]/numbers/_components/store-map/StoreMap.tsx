@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
+import type { LatLngBounds } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './styles.css';
 import clsx from 'clsx';
@@ -13,8 +13,7 @@ import { COLORS } from './types';
 import { createIconPairForStyle } from './icons';
 import { useStoreMapFilters } from './hooks';
 import { EggMarker, MapFilterPanel, MapInitializer, MapZoomTracker } from './components';
-import { createClusterCustomIcon } from './clusterIcon';
-import { MAX_CLUSTER_RADIUS, DISABLE_CLUSTERING_AT_ZOOM } from './clusterConfig';
+import { smartFilterStores } from './smartFilter';
 
 type StoreMapProps = {
   stores?: Store[];
@@ -65,13 +64,32 @@ export default function StoreMap({
   });
 
   const [currentZoom, setCurrentZoom] = useState(5.5);
-  const onZoomChange = useCallback((z: number) => setCurrentZoom(z), []);
+  const [bounds, setBounds] = useState<LatLngBounds | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  /*
-   * NOTE: Bounds-based culling (visibleStores) was removed for cluster stability.
-   * Using filteredStores ensures clusters don't recalculate when panning.
-   * See STABILITY_FIX.md for details.
-   */
+  // Detect mobile once on mount (stable, no re-renders on resize)
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
+  const onZoomChange = useCallback((z: number) => setCurrentZoom(z), []);
+  const onBoundsChange = useCallback((b: LatLngBounds) => setBounds(b), []);
+
+  // Smart filter: viewport-based + spatial sampling at low zoom
+  const visibleStores = useMemo(() => {
+    if (!bounds) return [];
+    return smartFilterStores(
+      filteredStores,
+      currentZoom,
+      {
+        north: bounds.getNorth(),
+        south: bounds.getSouth(),
+        east: bounds.getEast(),
+        west: bounds.getWest(),
+      },
+      isMobile
+    );
+  }, [filteredStores, currentZoom, bounds, isMobile]);
 
   /*
    * CSS scale factor applied via `--marker-zoom-scale` custom property.
@@ -109,34 +127,22 @@ export default function StoreMap({
         maxZoom={18}
       >
         <MapInitializer />
-        <MapZoomTracker onZoomChange={onZoomChange} />
+        <MapZoomTracker onZoomChange={onZoomChange} onBoundsChange={onBoundsChange} />
 
         <TileLayer
           url="https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap France"
         />
 
-        <MarkerClusterGroup
-          chunkedLoading
-          iconCreateFunction={createClusterCustomIcon}
-          maxClusterRadius={MAX_CLUSTER_RADIUS}
-          disableClusteringAtZoom={DISABLE_CLUSTERING_AT_ZOOM}
-          spiderfyOnMaxZoom={true}
-          showCoverageOnHover={false}
-          zoomToBoundsOnClick={true}
-          animate={true}
-          animateAddingMarkers={false}
-          removeOutsideVisibleBounds={false}
-        >
-          {filteredStores.map((s, i) => (
-            <EggMarker
-              key={`${s.category}-${i}-${markerStyle}-${markerSize}-${outlineMode}-${strokeWidth}`}
-              store={s}
-              cageIcon={icons.cage}
-              freeIcon={icons.free}
-            />
-          ))}
-        </MarkerClusterGroup>
+        {/* Render only visible markers with smart spatial filtering */}
+        {visibleStores.map((s, idx) => (
+          <EggMarker
+            key={`${s.coords[0]}-${s.coords[1]}-${s.name}-${s.category}-${idx}`}
+            store={s}
+            cageIcon={icons.cage}
+            freeIcon={icons.free}
+          />
+        ))}
       </MapContainer>
 
       <MapFilterPanel

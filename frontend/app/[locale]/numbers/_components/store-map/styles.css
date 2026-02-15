@@ -1,3 +1,37 @@
+/* ===========================================
+   Egg Marker Styles
+   =========================================== */
+
+/* Hover effect for markers - use filter for shadow only, no transform */
+.leaflet-marker-icon.egg-marker {
+  transition: filter 0.2s ease;
+}
+
+.leaflet-marker-icon.egg-marker:hover {
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3)) brightness(1.05);
+  z-index: 1000 !important;
+}
+
+/* Scale the inner image instead to avoid Leaflet positioning issues */
+.leaflet-marker-icon.egg-marker img {
+  transition: transform 0.2s ease;
+  transform-origin: center bottom;
+}
+
+.leaflet-marker-icon.egg-marker:hover img {
+  transform: scale(1.15);
+}
+
+.leaflet-marker-icon.egg-marker:hover {
+  transform: scale(1.2) !important;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+  z-index: 1000 !important;
+}
+
+/* ===========================================
+   Cluster Styles (kept for future use)
+   =========================================== */
+
 /* Cluster icon styles */
 .custom-cluster-wrapper {
   background: transparent !important;
