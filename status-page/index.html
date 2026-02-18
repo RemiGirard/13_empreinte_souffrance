@@ -6,50 +6,334 @@
   <title>Status — L'heure des comptes</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; background: #f8f9fa; color: #333; padding: 2rem 1rem; max-width: 640px; margin: 0 auto; }
+    body { font-family: system-ui, sans-serif; background: #f8f9fa; color: #333; padding: 2rem 1rem; max-width: 680px; margin: 0 auto; }
     a { color: inherit; }
     h1 { font-size: 1.4rem; text-align: center; margin-bottom: 0.25rem; }
     .sub { text-align: center; font-size: 0.8rem; color: #999; margin-bottom: 1.5rem; }
     #status { text-align: center; padding: 1rem; border-radius: 8px; font-weight: 700; margin-bottom: 1.5rem; background: #f3f4f6; color: #666; }
-    .up { background: #dcfce7; color: #166534; }
-    .down { background: #fee2e2; color: #991b1b; }
+    .up   { background: #dcfce7 !important; color: #166534 !important; }
+    .down { background: #fee2e2 !important; color: #991b1b !important; }
+    .warn { background: #fef9c3 !important; color: #854d0e !important; }
+
+    /* ── section titles ── */
+    .section-title {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #aaa; margin: 1.5rem 0 0.5rem;
+    }
+
+    /* ── cards ── */
     .card { background: #fff; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.9rem; }
     .card-head strong { font-weight: 700; }
     .badge { font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 99px; }
+    .badge.up   { background: #dcfce7; color: #166534; }
+    .badge.down { background: #fee2e2; color: #991b1b; }
+    .badge.warn { background: #fef9c3; color: #854d0e; }
+    .badge.neutral { background: #f3f4f6; color: #666; }
+
+    /* ── uptime bars ── */
     .bar { display: flex; gap: 1px; height: 24px; }
     .bar div { flex: 1; border-radius: 2px; min-width: 2px; position: relative; }
     .bar .g { background: #22c55e; }
     .bar .r { background: #ef4444; }
     .bar .y { background: #f59e0b; }
     .bar .e { background: #e5e7eb; }
-    .bar div:hover::after { content: attr(title); position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: #333; color: #fff; font-size: 0.6rem; padding: 2px 6px; border-radius: 3px; white-space: nowrap; pointer-events: none; }
+    .bar div:hover::after { content: attr(title); position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: #333; color: #fff; font-size: 0.6rem; padding: 2px 6px; border-radius: 3px; white-space: nowrap; pointer-events: none; z-index: 10; }
     .stats { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa; margin-top: 0.3rem; }
+
+    /* ── metrics grid ── */
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
+    .metric-box { background: #fff; border-radius: 8px; padding: 0.75rem 1rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); text-align: center; }
+    .metric-box .val { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+    .metric-box .lbl { font-size: 0.65rem; color: #aaa; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-box .val.green { color: #16a34a; }
+    .metric-box .val.red   { color: #dc2626; }
+    .metric-box .val.amber { color: #d97706; }
+
+    /* ── response time bar ── */
+    .rt-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; font-size: 0.78rem; }
+    .rt-label { width: 3.5rem; color: #888; flex-shrink: 0; }
+    .rt-track { flex: 1; background: #f3f4f6; border-radius: 99px; height: 8px; overflow: hidden; }
+    .rt-fill  { height: 100%; border-radius: 99px; background: #22c55e; transition: width 0.4s; }
+    .rt-fill.amber { background: #f59e0b; }
+    .rt-fill.red   { background: #ef4444; }
+    .rt-val { width: 3.5rem; text-align: right; color: #555; flex-shrink: 0; }
+
+    /* ── backend dots ── */
+    .backends { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .backend-dot { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; background: #f8f9fa; border-radius: 6px; padding: 0.3rem 0.6rem; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot.up   { background: #22c55e; }
+    .dot.down { background: #ef4444; }
+
+    /* ── cert rows ── */
+    .cert-row { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid #f3f4f6; font-size: 0.8rem; }
+    .cert-row:last-child { border-bottom: none; }
+    .cert-domain { color: #555; font-family: monospace; font-size: 0.75rem; }
+    .cert-days { font-weight: 600; }
+    .cert-days.ok   { color: #16a34a; }
+    .cert-days.warn { color: #d97706; }
+    .cert-days.crit { color: #dc2626; }
+
+    /* ── tls traffic ── */
+    .tls-row { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 0.2rem 0; color: #555; }
+    .tls-row span:last-child { font-weight: 600; color: #333; }
+
+    /* ── refresh indicator ── */
+    .refresh-note { text-align: center; font-size: 0.7rem; color: #ccc; margin-top: 1.5rem; }
+    .pulse { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; margin-right: 4px; vertical-align: middle; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── loading skeleton ── */
+    .skeleton { background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 4px; height: 1rem; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   </style>
 </head>
 <body>
   <h1><a href="https://lheuredescomptes.org">L'heure des comptes</a></h1>
   <p class="sub" id="updated">Status</p>
   <div id="status">Loading...</div>
-  <div id="services"></div>
+
+  <!-- ── Uptime (from status.json) ── -->
+  <div class="section-title">Uptime — 90 days</div>
+  <div id="services"><div class="skeleton" style="height:80px"></div></div>
+
+  <!-- ── Live traffic (from Traefik metrics) ── -->
+  <div class="section-title">Traffic <span style="font-weight:400;text-transform:none;letter-spacing:0">(since last Traefik restart)</span></div>
+  <div class="metrics-grid" id="traffic-grid">
+    <div class="metric-box"><div class="val skeleton">&nbsp;</div><div class="lbl">Requests</div></div>
+    <div class="metric-box"><div class="val skeleton">&nbsp;</div><div class="lbl">Error rate</div></div>
+    <div class="metric-box"><div class="val skeleton">&nbsp;</div><div class="lbl">Active conns</div></div>
+  </div>
+  <div class="card" id="traffic-codes-card" style="display:none">
+    <div class="card-head"><strong>HTTP status breakdown</strong></div>
+    <div id="traffic-codes"></div>
+  </div>
+
+  <!-- ── Server performance ── -->
+  <div class="section-title">Server performance</div>
+  <div class="card" id="perf-card">
+    <div class="card-head"><strong>Response time distribution</strong><span class="badge neutral" id="perf-badge">—</span></div>
+    <div id="perf-bars"><div class="skeleton" style="height:60px"></div></div>
+    <div class="stats" id="perf-stats" style="margin-top:0.5rem"></div>
+  </div>
+
+  <!-- ── Backend health ── -->
+  <div class="section-title">Backend instances</div>
+  <div class="card">
+    <div class="backends" id="backends"><div class="skeleton" style="height:30px;width:100%"></div></div>
+  </div>
+
+  <!-- ── TLS certificates ── -->
+  <div class="section-title">TLS certificates</div>
+  <div class="card" id="certs-card">
+    <div id="certs"><div class="skeleton" style="height:80px"></div></div>
+  </div>
+
+  <p class="refresh-note"><span class="pulse"></span>Live metrics refresh every 30s</p>
+
   <script>
-    fetch('data/status.json').then(r => r.json()).then(data => {
+    const METRICS_URL = 'https://traefik.lheuredescomptes.org/metrics';
+    const STATUS_URL  = 'data/status.json';
+
+    // ── Prometheus text parser ──────────────────────────────────────────────
+    function parseMetrics(text) {
+      const result = {};
+      for (const line of text.split('\n')) {
+        if (line.startsWith('#') || !line.trim()) continue;
+        const m = line.match(/^([a-z_]+)(\{[^}]*\})?\s+([\d.e+\-]+)/);
+        if (!m) continue;
+        const name   = m[1];
+        const labels = {};
+        if (m[2]) {
+          for (const kv of m[2].slice(1,-1).matchAll(/(\w+)="([^"]*)"/g))
+            labels[kv[1]] = kv[2];
+        }
+        const value = parseFloat(m[3]);
+        if (!result[name]) result[name] = [];
+        result[name].push({ labels, value });
+      }
+      return result;
+    }
+
+    function getVal(metrics, name, labelFilter = {}) {
+      const series = metrics[name] || [];
+      const match = series.filter(s =>
+        Object.entries(labelFilter).every(([k,v]) => s.labels[k] === v)
+      );
+      return match.reduce((a, s) => a + s.value, 0);
+    }
+
+    function fmt(n) {
+      if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+      if (n >= 1e3) return (n/1e3).toFixed(1) + 'k';
+      return String(Math.round(n));
+    }
+
+    function fmtBytes(b) {
+      if (b >= 1e9) return (b/1e9).toFixed(2) + ' GB';
+      if (b >= 1e6) return (b/1e6).toFixed(1) + ' MB';
+      if (b >= 1e3) return (b/1e3).toFixed(0) + ' KB';
+      return b + ' B';
+    }
+
+    // ── Render Traefik metrics ──────────────────────────────────────────────
+    function renderMetrics(text) {
+      const m = parseMetrics(text);
+
+      // ── Traffic grid ──
+      const req200  = getVal(m, 'traefik_service_requests_total', {code:'200'});
+      const req304  = getVal(m, 'traefik_service_requests_total', {code:'304'});
+      const req4xx  = [400,401,403,404,429].reduce((a,c) => a + getVal(m,'traefik_service_requests_total',{code:String(c)}), 0);
+      const req5xx  = [500,502,503,504].reduce((a,c) => a + getVal(m,'traefik_service_requests_total',{code:String(c)}), 0);
+      const totalReq = req200 + req304 + req4xx + req5xx;
+      const errRate  = totalReq > 0 ? ((req4xx + req5xx) / totalReq * 100) : 0;
+      const activeConns = getVal(m, 'traefik_open_connections', {entrypoint:'websecure'});
+      const bandwidth   = getVal(m, 'traefik_entrypoint_responses_bytes_total', {code:'200'})
+                        + getVal(m, 'traefik_entrypoint_responses_bytes_total', {code:'304'});
+
+      const errClass = errRate === 0 ? 'green' : errRate < 5 ? 'amber' : 'red';
+      document.getElementById('traffic-grid').innerHTML = `
+        <div class="metric-box"><div class="val">${fmt(totalReq)}</div><div class="lbl">Total requests</div></div>
+        <div class="metric-box"><div class="val ${errClass}">${errRate.toFixed(1)}%</div><div class="lbl">Error rate</div></div>
+        <div class="metric-box"><div class="val">${Math.round(activeConns)}</div><div class="lbl">Active conns</div></div>
+        <div class="metric-box"><div class="val green">${fmt(req200)}</div><div class="lbl">2xx OK</div></div>
+        <div class="metric-box"><div class="val" style="color:#6b7280">${fmt(req304)}</div><div class="lbl">304 Cached</div></div>
+        <div class="metric-box"><div class="val ${req4xx+req5xx>0?'red':'green'}">${fmt(req4xx+req5xx)}</div><div class="lbl">4xx / 5xx</div></div>
+      `;
+
+      // bandwidth card
+      const bwCard = document.getElementById('traffic-codes-card');
+      bwCard.style.display = '';
+      document.getElementById('traffic-codes').innerHTML = `
+        <div class="tls-row"><span>Total bandwidth served</span><span>${fmtBytes(bandwidth)}</span></div>
+        <div class="tls-row"><span>TLS 1.3 — AES-128-GCM</span><span>${fmt(getVal(m,'traefik_entrypoint_requests_tls_total',{tls_cipher:'TLS_AES_128_GCM_SHA256'}))} req</span></div>
+        <div class="tls-row"><span>TLS 1.3 — ChaCha20</span><span>${fmt(getVal(m,'traefik_entrypoint_requests_tls_total',{tls_cipher:'TLS_CHACHA20_POLY1305_SHA256'}))} req</span></div>
+      `;
+
+      // ── Performance ──
+      // histogram buckets for 200 responses on websecure entrypoint
+      const buckets = [
+        { le: '0.1',  label: '< 100ms' },
+        { le: '0.3',  label: '< 300ms' },
+        { le: '1.2',  label: '< 1.2s'  },
+        { le: '5',    label: '< 5s'    },
+        { le: '+Inf', label: '> 5s'    },
+      ];
+
+      const totalOk = getVal(m, 'traefik_entrypoint_request_duration_seconds_bucket',
+        { code:'200', entrypoint:'websecure', le:'+Inf' });
+      const sumSec  = getVal(m, 'traefik_entrypoint_request_duration_seconds_sum',
+        { code:'200', entrypoint:'websecure' });
+      const avgMs   = totalOk > 0 ? Math.round((sumSec / totalOk) * 1000) : null;
+
+      // p50 / p90 approximation from buckets
+      function approxPercentile(pct) {
+        const target = totalOk * pct;
+        const bkts = [
+          { le: 0.1,  count: getVal(m,'traefik_entrypoint_request_duration_seconds_bucket',{code:'200',entrypoint:'websecure',le:'0.1'}) },
+          { le: 0.3,  count: getVal(m,'traefik_entrypoint_request_duration_seconds_bucket',{code:'200',entrypoint:'websecure',le:'0.3'}) },
+          { le: 1.2,  count: getVal(m,'traefik_entrypoint_request_duration_seconds_bucket',{code:'200',entrypoint:'websecure',le:'1.2'}) },
+          { le: 5,    count: getVal(m,'traefik_entrypoint_request_duration_seconds_bucket',{code:'200',entrypoint:'websecure',le:'5'}) },
+          { le: Infinity, count: totalOk },
+        ];
+        let prev = { le: 0, count: 0 };
+        for (const b of bkts) {
+          if (b.count >= target) {
+            const frac = (target - prev.count) / (b.count - prev.count || 1);
+            return (prev.le + frac * (b.le - prev.le)) * 1000;
+          }
+          prev = b;
+        }
+        return null;
+      }
+
+      const p50 = approxPercentile(0.5);
+      const p90 = approxPercentile(0.9);
+
+      const perfBars = buckets.map((b, i) => {
+        const count = getVal(m, 'traefik_entrypoint_request_duration_seconds_bucket',
+          { code:'200', entrypoint:'websecure', le: b.le });
+        const prev  = i === 0 ? 0 : getVal(m, 'traefik_entrypoint_request_duration_seconds_bucket',
+          { code:'200', entrypoint:'websecure', le: buckets[i-1].le });
+        const inBucket = Math.max(0, count - prev);
+        const pct = totalOk > 0 ? (inBucket / totalOk * 100) : 0;
+        const fillClass = i <= 1 ? '' : i === 2 ? 'amber' : 'red';
+        return `
+          <div class="rt-row">
+            <span class="rt-label">${b.label}</span>
+            <span class="rt-track"><span class="rt-fill ${fillClass}" style="width:${pct.toFixed(1)}%"></span></span>
+            <span class="rt-val">${pct.toFixed(0)}% <span style="color:#bbb;font-size:0.65rem">(${fmt(inBucket)})</span></span>
+          </div>`;
+      }).join('');
+
+      document.getElementById('perf-bars').innerHTML = perfBars;
+
+      const perfClass = avgMs === null ? 'neutral' : avgMs < 200 ? 'up' : avgMs < 800 ? 'warn' : 'down';
+      document.getElementById('perf-badge').textContent = avgMs !== null ? `avg ${avgMs}ms` : '—';
+      document.getElementById('perf-badge').className = `badge ${perfClass}`;
+
+      const statsHtml = [
+        p50 !== null ? `p50 ≈ ${Math.round(p50)}ms` : null,
+        p90 !== null ? `p90 ≈ ${Math.round(p90)}ms` : null,
+        totalOk > 0  ? `${fmt(totalOk)} successful requests` : null,
+      ].filter(Boolean).join(' · ');
+      document.getElementById('perf-stats').innerHTML = `<span>${statsHtml}</span>`;
+
+      // ── Backends ──
+      const serverUp = m['traefik_service_server_up'] || [];
+      const dotsHtml = serverUp.map(s => {
+        const isUp = s.value === 1;
+        const svc  = s.labels.service || '';
+        const url  = s.labels.url || '';
+        const shortSvc = svc.replace(/@swarm$/, '').replace(/`/g, '');
+        const port = url.match(/:(\d+)$/)?.[1] || '';
+        const role = port === '3000' ? 'frontend' : port === '8000' ? 'api' : port;
+        return `<div class="backend-dot">
+          <span class="dot ${isUp ? 'up' : 'down'}"></span>
+          <span title="${url}">${shortSvc} <span style="color:#aaa">${role}</span></span>
+        </div>`;
+      }).join('');
+      document.getElementById('backends').innerHTML = dotsHtml || '<span style="color:#aaa;font-size:0.8rem">No data</span>';
+
+      // ── TLS certs ──
+      const certs = m['traefik_tls_certs_not_after'] || [];
+      const now   = Date.now() / 1000;
+      const certsHtml = certs
+        .map(s => {
+          const daysLeft = Math.floor((s.value - now) / 86400);
+          const cls = daysLeft > 30 ? 'ok' : daysLeft > 7 ? 'warn' : 'crit';
+          return { domain: s.labels.cn, daysLeft, cls };
+        })
+        .sort((a, b) => a.daysLeft - b.daysLeft)
+        .map(c => `
+          <div class="cert-row">
+            <span class="cert-domain">${c.domain}</span>
+            <span class="cert-days ${c.cls}">${c.daysLeft}d</span>
+          </div>`)
+        .join('');
+      document.getElementById('certs').innerHTML = certsHtml || '<span style="color:#aaa;font-size:0.8rem">No data</span>';
+    }
+
+    // ── Render uptime (from status.json) ───────────────────────────────────
+    function renderUptime(data) {
       if (data.lastUpdated)
-        document.getElementById('updated').textContent = 'Last checked: ' + new Date(data.lastUpdated).toLocaleString('en-GB');
+        document.getElementById('updated').textContent =
+          'Last checked: ' + new Date(data.lastUpdated).toLocaleString('en-GB');
 
       let allUp = true;
-      let html = '';
+      let html  = '';
 
       for (const s of data.sites) {
         if (s.currentStatus !== 'up') allUp = false;
         const days = s.days || [];
-        const pad = days.slice(-90);
+        const pad  = days.slice(-90);
         while (pad.length < 90) pad.unshift(null);
 
-        const ok = days.filter(d => d.uptime >= 0);
+        const ok  = days.filter(d => d.uptime >= 0);
         const pct = ok.length ? (ok.reduce((a, d) => a + d.uptime, 0) / ok.length).toFixed(2) : '—';
-        const rt = days.filter(d => d.responseTime > 0);
-        const ms = rt.length ? Math.round(rt.reduce((a, d) => a + d.responseTime, 0) / rt.length) : null;
+        const rt  = days.filter(d => d.responseTime > 0);
+        const ms  = rt.length ? Math.round(rt.reduce((a, d) => a + d.responseTime, 0) / rt.length) : null;
 
         const bars = pad.map(d => {
           if (!d) return '<div class="e" title="No data"></div>';
@@ -62,17 +346,37 @@
         html += `<div class="card">
           <div class="card-head"><strong>${s.name}</strong><span class="badge ${badge ? 'up' : 'down'}">${badge ? 'OK' : 'Down'}</span></div>
           <div class="bar">${bars}</div>
-          <div class="stats"><span>90 days</span><span>${pct}%${ms ? ' · ' + ms + 'ms' : ''}</span></div>
+          <div class="stats"><span>90 days</span><span>${pct}%${ms ? ' · ' + ms + 'ms avg server time' : ''}</span></div>
         </div>`;
       }
 
       document.getElementById('services').innerHTML = html;
       const el = document.getElementById('status');
       el.textContent = allUp ? 'All systems operational' : 'Some services are experiencing issues';
-      el.className = allUp ? 'up' : 'down';
-    }).catch(() => {
-      document.getElementById('status').textContent = 'Unable to load data';
-    });
+      el.className   = allUp ? 'up' : 'down';
+    }
+
+    // ── Load & refresh ─────────────────────────────────────────────────────
+    function loadMetrics() {
+      fetch(METRICS_URL)
+        .then(r => r.text())
+        .then(renderMetrics)
+        .catch(() => {
+          document.getElementById('traffic-grid').innerHTML =
+            '<div style="grid-column:1/-1;text-align:center;color:#aaa;font-size:0.8rem;padding:1rem">Could not reach metrics endpoint</div>';
+        });
+    }
+
+    fetch(STATUS_URL)
+      .then(r => r.json())
+      .then(renderUptime)
+      .catch(() => {
+        document.getElementById('status').textContent = 'Unable to load uptime data';
+        document.getElementById('services').innerHTML = '';
+      });
+
+    loadMetrics();
+    setInterval(loadMetrics, 30_000);
   </script>
 </body>
 </html>
