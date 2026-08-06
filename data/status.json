@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-08-06T06:15:56Z",
+  "lastUpdated": "2026-08-06T09:12:59Z",
   "sites": [
     {
       "name": "L'heure des comptes",
-      "currentStatus": "down",
+      "currentStatus": "up",
       "days": [
         {
           "date": "2026-05-09",
@@ -719,17 +719,17 @@
         },
         {
           "date": "2026-08-06",
-          "total": 3,
-          "ok": 0,
-          "responseTimeSum": 408,
-          "uptime": 0,
-          "responseTime": 136
+          "total": 4,
+          "ok": 1,
+          "responseTimeSum": 548,
+          "uptime": 25,
+          "responseTime": 137
         }
       ]
     },
     {
       "name": "API",
-      "currentStatus": "down",
+      "currentStatus": "up",
       "days": [
         {
           "date": "2026-05-09",
@@ -1445,17 +1445,17 @@
         },
         {
           "date": "2026-08-06",
-          "total": 3,
-          "ok": 0,
-          "responseTimeSum": 409,
-          "uptime": 0,
-          "responseTime": 136.33333333333334
+          "total": 4,
+          "ok": 1,
+          "responseTimeSum": 529,
+          "uptime": 25,
+          "responseTime": 132.25
         }
       ]
     },
     {
       "name": "Carte interactive (embed)",
-      "currentStatus": "down",
+      "currentStatus": "up",
       "days": [
         {
           "date": "2026-05-09",
@@ -2171,11 +2171,11 @@
         },
         {
           "date": "2026-08-06",
-          "total": 3,
-          "ok": 0,
-          "responseTimeSum": 416,
-          "uptime": 0,
-          "responseTime": 138.66666666666666
+          "total": 4,
+          "ok": 1,
+          "responseTimeSum": 557,
+          "uptime": 25,
+          "responseTime": 139.25
         }
       ]
     }
