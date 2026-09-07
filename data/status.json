@@ -1,18 +1,10 @@
 {
-  "lastUpdated": "2026-09-06T23:03:40Z",
+  "lastUpdated": "2026-09-07T00:56:49Z",
   "sites": [
     {
       "name": "L'heure des comptes",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-06-09",
-          "total": 25,
-          "ok": 25,
-          "responseTimeSum": 4053,
-          "uptime": 100,
-          "responseTime": 162.12
-        },
         {
           "date": "2026-06-10",
           "total": 22,
@@ -724,6 +716,14 @@
           "responseTimeSum": 1398,
           "uptime": 100,
           "responseTime": 174.75
+        },
+        {
+          "date": "2026-09-07",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 195,
+          "uptime": 100,
+          "responseTime": 195
         }
       ]
     },
@@ -731,14 +731,6 @@
       "name": "API",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-06-09",
-          "total": 25,
-          "ok": 25,
-          "responseTimeSum": 3256,
-          "uptime": 100,
-          "responseTime": 130.24
-        },
         {
           "date": "2026-06-10",
           "total": 22,
@@ -1450,6 +1442,14 @@
           "responseTimeSum": 973,
           "uptime": 100,
           "responseTime": 121.625
+        },
+        {
+          "date": "2026-09-07",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 161,
+          "uptime": 100,
+          "responseTime": 161
         }
       ]
     },
@@ -1457,14 +1457,6 @@
       "name": "Carte interactive (embed)",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-06-09",
-          "total": 25,
-          "ok": 25,
-          "responseTimeSum": 3273,
-          "uptime": 100,
-          "responseTime": 130.92
-        },
         {
           "date": "2026-06-10",
           "total": 22,
@@ -2176,6 +2168,14 @@
           "responseTimeSum": 1007,
           "uptime": 100,
           "responseTime": 125.875
+        },
+        {
+          "date": "2026-09-07",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 162,
+          "uptime": 100,
+          "responseTime": 162
         }
       ]
     }
