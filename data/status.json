@@ -1,18 +1,10 @@
 {
-  "lastUpdated": "2026-10-28T21:49:02Z",
+  "lastUpdated": "2026-10-29T01:18:29Z",
   "sites": [
     {
       "name": "L'heure des comptes",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-07-31",
-          "total": 12,
-          "ok": 0,
-          "responseTimeSum": 1476,
-          "uptime": 0,
-          "responseTime": 123
-        },
         {
           "date": "2026-08-01",
           "total": 17,
@@ -724,6 +716,14 @@
           "responseTimeSum": 951,
           "uptime": 100,
           "responseTime": 190.2
+        },
+        {
+          "date": "2026-10-29",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 156,
+          "uptime": 100,
+          "responseTime": 156
         }
       ]
     },
@@ -731,14 +731,6 @@
       "name": "API",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-07-31",
-          "total": 12,
-          "ok": 0,
-          "responseTimeSum": 1498,
-          "uptime": 0,
-          "responseTime": 124.83333333333333
-        },
         {
           "date": "2026-08-01",
           "total": 17,
@@ -1450,6 +1442,14 @@
           "responseTimeSum": 555,
           "uptime": 100,
           "responseTime": 111
+        },
+        {
+          "date": "2026-10-29",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 132,
+          "uptime": 100,
+          "responseTime": 132
         }
       ]
     },
@@ -1457,14 +1457,6 @@
       "name": "Carte interactive (embed)",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-07-31",
-          "total": 12,
-          "ok": 0,
-          "responseTimeSum": 1476,
-          "uptime": 0,
-          "responseTime": 123
-        },
         {
           "date": "2026-08-01",
           "total": 17,
@@ -2176,6 +2168,14 @@
           "responseTimeSum": 573,
           "uptime": 100,
           "responseTime": 114.6
+        },
+        {
+          "date": "2026-10-29",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 128,
+          "uptime": 100,
+          "responseTime": 128
         }
       ]
     }
