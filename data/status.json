@@ -1,18 +1,10 @@
 {
-  "lastUpdated": "2026-10-29T23:38:55Z",
+  "lastUpdated": "2026-10-30T02:58:08Z",
   "sites": [
     {
       "name": "L'heure des comptes",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-08-01",
-          "total": 17,
-          "ok": 0,
-          "responseTimeSum": 2181,
-          "uptime": 0,
-          "responseTime": 128.2941176470588
-        },
         {
           "date": "2026-08-02",
           "total": 16,
@@ -724,6 +716,14 @@
           "responseTimeSum": 730,
           "uptime": 100,
           "responseTime": 146
+        },
+        {
+          "date": "2026-10-30",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 340,
+          "uptime": 100,
+          "responseTime": 340
         }
       ]
     },
@@ -731,14 +731,6 @@
       "name": "API",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-08-01",
-          "total": 17,
-          "ok": 0,
-          "responseTimeSum": 2180,
-          "uptime": 0,
-          "responseTime": 128.23529411764707
-        },
         {
           "date": "2026-08-02",
           "total": 16,
@@ -1450,6 +1442,14 @@
           "responseTimeSum": 574,
           "uptime": 100,
           "responseTime": 114.8
+        },
+        {
+          "date": "2026-10-30",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 135,
+          "uptime": 100,
+          "responseTime": 135
         }
       ]
     },
@@ -1457,14 +1457,6 @@
       "name": "Carte interactive (embed)",
       "currentStatus": "up",
       "days": [
-        {
-          "date": "2026-08-01",
-          "total": 17,
-          "ok": 0,
-          "responseTimeSum": 2172,
-          "uptime": 0,
-          "responseTime": 127.76470588235294
-        },
         {
           "date": "2026-08-02",
           "total": 16,
@@ -2176,6 +2168,14 @@
           "responseTimeSum": 588,
           "uptime": 100,
           "responseTime": 117.6
+        },
+        {
+          "date": "2026-10-30",
+          "total": 1,
+          "ok": 1,
+          "responseTimeSum": 131,
+          "uptime": 100,
+          "responseTime": 131
         }
       ]
     }
